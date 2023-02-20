@@ -4,6 +4,8 @@ from utils.classes.stack import Stack
 # Función para construir un NFA a partir de una expresión regular en notación posfix.
 def thompson_construction(postfix):
 
+    print(postfix)
+
     # Variables importantes para la construcción.
     current_state = 0
     nfa_stack = Stack()
@@ -38,6 +40,62 @@ def thompson_construction(postfix):
             # Cambio de próximo estado y almacenamiento del nuevo NFA.
             current_state += 2
             nfa_stack.push(kleene_nfa)
+
+        # Si se encuentra un nullable, se construye su NFA.
+        elif (char == "?"):
+
+            # Se obtiene el NFA que se encuentra en la cima del stack.
+            nfa_to_null = nfa_stack.pop()
+
+            # Instancia del nuevo NFA nullableado.
+            nullable_nfa = NFA(
+                states=nfa_to_null.states | { current_state, current_state + 1 },
+                alphabet=nfa_to_null.alphabet,
+                initial_state=current_state,
+                acceptance_state=current_state + 1,
+                mapping={
+                    **nfa_to_null.mapping,
+                    nfa_to_null.acceptance_state: {
+                        "ε": set([current_state + 1])
+                    },
+                    current_state: {
+                        "ε": set([nfa_to_null.initial_state, current_state + 1])
+                    },
+                    current_state + 1: {}
+                }
+            )
+
+            # Cambio de próximo estado y almacenamiento del nuevo NFA.
+            current_state += 2
+            nfa_stack.push(nullable_nfa)
+
+        # Si se encuentra una cerradura positiva, se construye su NFA.
+        elif (char == "+"):
+
+            # Se obtiene el NFA que se encuentra en la cima del stack.
+            nfa_to_positive = nfa_stack.pop()
+
+            # Instancia del nuevo NFA positivizado.
+            positive_nfa = NFA(
+                states=nfa_to_positive.states | { current_state, current_state + 1 },
+                alphabet=nfa_to_positive.alphabet,
+                initial_state=current_state,
+                acceptance_state=current_state + 1,
+                mapping={
+                    **nfa_to_positive.mapping,
+                    nfa_to_positive.acceptance_state: {
+                        "ε": set([nfa_to_positive.initial_state, current_state + 1])
+                    },
+                    current_state: {
+                        "ε": set([nfa_to_positive.initial_state])
+                    },
+                    current_state + 1: {}
+                }
+            )
+
+            # Cambio de próximo estado y almacenamiento del nuevo NFA.
+            current_state += 2
+            nfa_stack.push(positive_nfa)
 
         # Si se encuentra una concatenación, se construye una cadena.
         elif (char == "."):

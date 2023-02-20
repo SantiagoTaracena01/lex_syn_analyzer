@@ -2,9 +2,9 @@
 from utils.classes.stack import Stack
 
 # Constantes importantes para el archivo.
-OPERATORS = ("*", ".", "|")
-OPERATORS_AND_PARENTHESIS = ("(", ")", "*", ".", "|")
-OPERATOR_PRECEDENCE = { "?": 3, "+": 3, "*": 3, ".": 2, "|": 1, "(": 0, ")": 0, "": 0 }
+OPERATORS = ("+", "?", "*", ".", "|")
+OPERATORS_AND_PARENTHESIS = ("(", ")", "+", "?", "*", ".", "|")
+OPERATOR_PRECEDENCE = { "+": 3, "?": 3, "+": 3, "*": 3, ".": 2, "|": 1, "(": 0, ")": 0, "": 0 }
 IMPOSSIBLY_HIGH_PRECEDENCE = 99
 
 # Funciones lambda.
@@ -50,7 +50,7 @@ def check_concatenations(regex):
                 continue
 
             # Condiciones para llevar una concatenación luego del caracter analizado.
-            elif (((char == ")") or (char == "*") or (char not in OPERATORS_AND_PARENTHESIS)) and (regex[index + 1] not in ("*", "|", ")"))):
+            elif (((char in (")", "+", "?", "*")) or (char not in OPERATORS_AND_PARENTHESIS)) and (regex[index + 1] not in ("+", "?", "*", "|", ")"))):
                 output += "."
 
         # Si ocurre un error buscando el siguiente caracter, el proceso finaliza.
