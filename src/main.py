@@ -1,4 +1,8 @@
 from utils.postfix import regex_infix_to_postfix
+from thompson import thompson_construction
 
-regex = input("Please, input a regex: ")
-print(regex_infix_to_postfix(regex))
+# regex = input("Please, input a regex: ")
+regex = "(a|b)*"
+postfix = regex_infix_to_postfix(regex)
+nfa = thompson_construction(postfix)
+print(nfa)
