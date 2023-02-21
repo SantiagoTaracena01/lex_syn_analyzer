@@ -4,7 +4,7 @@ from utils.classes.stack import Stack
 # Constantes importantes para el archivo.
 OPERATORS = ("+", "?", "*", ".", "|")
 OPERATORS_AND_PARENTHESIS = ("(", ")", "+", "?", "*", ".", "|")
-OPERATOR_PRECEDENCE = { "+": 3, "?": 3, "+": 3, "*": 3, ".": 2, "|": 1, "(": 0, ")": 0, "": 0 }
+OPERATOR_PRECEDENCE = { "+": 3, "?": 3, "*": 3, ".": 2, "|": 1, "(": 0, ")": 0, "": 0 }
 IMPOSSIBLY_HIGH_PRECEDENCE = 99
 
 # Funciones lambda.

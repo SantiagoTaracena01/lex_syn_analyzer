@@ -130,3 +130,6 @@ dmypy.json
 
 # Referenced documents
 test.js
+
+# Text output files
+output

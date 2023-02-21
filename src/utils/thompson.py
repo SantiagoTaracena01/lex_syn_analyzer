@@ -1,10 +1,8 @@
-from nfa import NFA
+from utils.classes.nfa import NFA
 from utils.classes.stack import Stack
 
 # Función para construir un NFA a partir de una expresión regular en notación posfix.
 def thompson_construction(postfix):
-
-    print(postfix)
 
     # Variables importantes para la construcción.
     current_state = 0
@@ -101,8 +99,8 @@ def thompson_construction(postfix):
         elif (char == "."):
 
             # Se obtienen los dos últimos NFA del stack.
-            first_nfa = nfa_stack.pop()
             second_nfa = nfa_stack.pop()
+            first_nfa = nfa_stack.pop()
 
             # Instancia de la concatenación de los dos últimos NFAs.
             concatenation_nfa = NFA(
@@ -126,8 +124,8 @@ def thompson_construction(postfix):
         elif (char == "|"):
 
             # Se obtienen los dos últimos NFA del stack.
-            first_nfa = nfa_stack.pop()
             second_nfa = nfa_stack.pop()
+            first_nfa = nfa_stack.pop()
 
             # Instancia de la unión de los dos últimos NFAs.
             union_nfa = NFA(
