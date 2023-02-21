@@ -1,3 +1,9 @@
+"""
+Universidad del Valle de Guatemala
+(CC3071) Diseño de Lenguajes de Programación
+Santiago Taracena Puga (20017)
+"""
+
 # Clases y archivos importantes.
 from utils.classes.stack import Stack
 
