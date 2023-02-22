@@ -111,7 +111,7 @@ def thompson_construction(postfix):
 
             # Instancia de la concatenación de los dos últimos NFAs.
             concatenation_nfa = NFA(
-                states=first_nfa.states | second_nfa.states,
+                states=first_nfa.states | second_nfa.states - { second_nfa.initial_state },
                 alphabet=first_nfa.alphabet | second_nfa.alphabet,
                 initial_state=first_nfa.initial_state,
                 acceptance_state=second_nfa.acceptance_state,
@@ -119,7 +119,7 @@ def thompson_construction(postfix):
                     **first_nfa.mapping,
                     **second_nfa.mapping,
                     first_nfa.acceptance_state: {
-                        "ε": set([second_nfa.initial_state])
+                        **second_nfa.mapping[second_nfa.initial_state]
                     }
                 }
             )

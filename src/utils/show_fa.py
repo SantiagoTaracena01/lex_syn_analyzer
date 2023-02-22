@@ -16,6 +16,7 @@ def show_nfa(nfa):
 
     # Creación del grafo.
     visual_nfa = graphviz.Digraph(comment="NFA Result")
+    visual_nfa.attr(rankdir="LR")
 
     # Iteración para dibujar los estados.
     for state in nfa.states:
