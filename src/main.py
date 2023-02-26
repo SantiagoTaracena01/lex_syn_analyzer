@@ -5,7 +5,7 @@ Santiago Taracena Puga (20017)
 """
 
 # Módulos necesarios para la construcción del NFA.
-from utils.postfix import regex_infix_to_postfix
+from utils.postfix import regex_infix_to_postfix, check_concatenations
 from utils.thompson import thompson_construction
 from utils.show_fa import show_nfa
 

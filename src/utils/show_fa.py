@@ -22,9 +22,9 @@ def show_nfa(nfa):
     for state in nfa.states:
 
         # Dibujo de los estados del autómata.
-        if state == nfa.initial_state:
+        if (state == nfa.initial_state):
             visual_nfa.node(str(state), str(state), shape="circle", style="filled")
-        elif state == nfa.acceptance_state:
+        elif (state == nfa.acceptance_state):
             visual_nfa.node(str(state), str(state), shape="doublecircle", style="filled")
         else:
             visual_nfa.node(str(state), str(state), shape="circle")
