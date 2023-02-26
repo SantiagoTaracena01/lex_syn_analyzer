@@ -17,12 +17,11 @@ class NFA(object):
 
     # Representación en string del NFA.
     def __repr__(self):
-        return f"""
-            NFA(
-                states={self.states},
-                alphabet={self.alphabet},
-                initial_state={self.initial_state},
-                acceptance_state={self.acceptance_state},
-                mapping={self.mapping}
-            )
-        """
+        string_representation = "NFA(\n"
+        string_representation += f"\tstates={self.states},\n"
+        string_representation += f"\talphabet={self.alphabet},\n"
+        string_representation += f"\tinitial_state={self.initial_state},\n"
+        string_representation += f"\tacceptance_state={self.acceptance_state},\n"
+        string_representation += f"\tmapping={self.mapping}\n"
+        string_representation += ")"
+        return string_representation
