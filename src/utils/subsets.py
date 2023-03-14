@@ -6,6 +6,7 @@ Santiago Taracena Puga (20017)
 
 # Módulos importantes para la construcción de subconjuntos.
 from utils.classes.stack import Stack
+from utils.classes.queue import Queue
 from utils.classes.dfa import DFA
 
 # Definición de la función ε-closure.
@@ -58,7 +59,62 @@ def move(element, symbol, mapping):
     # Retorno del resultado.
     return result
 
+# Definición de la función de construcción de subconjuntos.
 def subset_construction(nfa):
-    print(ε_closure({ nfa.initial_state, 1, 3 }, nfa.mapping))
-    print(move({ 0, 2 }, "a", nfa.mapping))
-    pass
+
+    # El alfabeto del DFA es el mismo que el del NFA. También se instancia el mapping.
+    alphabet = nfa.alphabet
+    mapping = {}
+    states = {}
+    current_state = 0
+    state_queue = Queue()
+
+    # Inicio de la construcción de subconjuntos.
+    initial_state = ε_closure({nfa.initial_state}, nfa.mapping)
+    states[current_state] = initial_state
+    state_queue.push(current_state)
+    current_state += 1
+
+    # Iteración del algoritmo de construcción de subconjuntos mientras haya estados qué analizar en el stack.
+    while (not state_queue.is_empty()):
+
+        # Estado a crear sus transiciones.
+        state = state_queue.get()
+
+        # Iteración de los símbolos del alfabeto.
+        for symbol in alphabet:
+
+            # Nuevo estado a partir del move del estado actual con el símbolo iteratdo.
+            new_state = ε_closure(move(states[state], symbol, nfa.mapping), nfa.mapping)
+
+            # Si el nuevo estado no es vacío y no está en los estados ya creados, se crea un nuevo estado.
+            if ((new_state != set()) and (new_state not in states.values())):
+                states[current_state] = new_state
+                state_queue.push(current_state)
+                current_state += 1
+
+            # Se crea la transición del estado actual con el símbolo iterado al nuevo estado.
+            for key in states:
+                if (states[key] == new_state):
+                    new_state = key
+
+            # Creación del nuevo estado en el mapping.
+            if (state not in mapping):
+                mapping[state] = {}
+
+            # Creación de la nueva transición en el mapping.
+            mapping[state][symbol] = new_state
+
+    acceptance_states = set()
+
+    for state in states:
+        if (nfa.acceptance_state in states[state]):
+            acceptance_states.add(state)
+
+    return DFA(
+        states=set(states.keys()),
+        alphabet=alphabet,
+        initial_state=0,
+        acceptance_states=acceptance_states,
+        mapping=mapping
+    )

@@ -12,7 +12,7 @@ import graphviz
 os.environ["PATH"] += os.pathsep + "C:/Program Files/Graphviz/bin"
 
 # Función para mostrar un NFA con graphviz.
-def show_nfa(nfa):
+def show_nfa(nfa, view=False):
 
     # Creación del grafo.
     visual_nfa = graphviz.Digraph(comment="NFA Result")
@@ -35,4 +35,30 @@ def show_nfa(nfa):
                 visual_nfa.edge(str(state), str(next_state), label=transition)
 
     # Visualización del NFA.
-    visual_nfa.render("./out/output", format="png", view=True)
+    visual_nfa.render("./out/nfa-output", format="png", view=view)
+
+# Función para mostrar un DFA con graphviz.
+def show_dfa(dfa, view=False):
+    
+    # Creación del grafo.
+    visual_dfa = graphviz.Digraph(comment="DFA Result")
+    visual_dfa.attr(rankdir="LR")
+
+    # Iteración para dibujar los estados.
+    for state in dfa.states:
+
+        # Dibujo de los estados del autómata.
+        if (state == dfa.initial_state):
+            visual_dfa.node(str(state), str(state), shape="circle", style="filled")
+        elif (state in dfa.acceptance_states):
+            visual_dfa.node(str(state), str(state), shape="doublecircle", style="filled")
+        else:
+            visual_dfa.node(str(state), str(state), shape="circle")
+
+        # Dibujo de las transiciones del autómata.
+        for transition in dfa.mapping[state]:
+            next_state = dfa.mapping[state][transition]
+            visual_dfa.edge(str(state), str(next_state), label=transition)
+
+    # Visualización del DFA.
+    visual_dfa.render("./out/dfa-output", format="png", view=view)

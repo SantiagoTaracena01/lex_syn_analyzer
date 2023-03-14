@@ -7,7 +7,7 @@ Santiago Taracena Puga (20017)
 # Definición de la clase DFA.
 class DFA(object):
 
-    # Método constructor de NFA que recibe estados, alfabeto, estado inicial, estado de aceptación y mapeo de transiciones.
+    # Método constructor de DFA que recibe estados, alfabeto, estado inicial, estado de aceptación y mapeo de transiciones.
     def __init__(self, states, alphabet, initial_state, acceptance_states, mapping):
         self.states = states
         self.alphabet = alphabet
@@ -15,9 +15,9 @@ class DFA(object):
         self.acceptance_states = acceptance_states
         self.mapping = mapping
 
-    # Representación en string del NFA.
+    # Representación en string del DFA.
     def __repr__(self):
-        string_representation = "NFA(\n"
+        string_representation = "DFA(\n"
         string_representation += f"\tstates={self.states},\n"
         string_representation += f"\talphabet={self.alphabet},\n"
         string_representation += f"\tinitial_state={self.initial_state},\n"
