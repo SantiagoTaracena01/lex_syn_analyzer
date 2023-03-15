@@ -38,8 +38,15 @@ def show_nfa(nfa, view=False):
     visual_nfa.render("./out/nfa-output", format="png", view=view)
 
 # Función para mostrar un DFA con graphviz.
-def show_dfa(dfa, view=False):
-    
+def show_dfa(dfa, type="normal", view=False):
+
+    # Diccionario para el nombre de los archivos de salida.
+    output_name = {
+        "normal": "dfa-output",
+        "min": "min-dfa-output",
+        "direct": "direct-dfa-output",
+    }
+
     # Creación del grafo.
     visual_dfa = graphviz.Digraph(comment="DFA Result")
     visual_dfa.attr(rankdir="LR")
@@ -61,4 +68,4 @@ def show_dfa(dfa, view=False):
             visual_dfa.edge(str(state), str(next_state), label=transition)
 
     # Visualización del DFA.
-    visual_dfa.render("./out/dfa-output", format="png", view=view)
+    visual_dfa.render(f"./out/{output_name[type]}", format="png", view=view)
