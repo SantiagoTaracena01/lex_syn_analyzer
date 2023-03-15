@@ -25,3 +25,26 @@ class DFA(object):
         string_representation += f"\tmapping={self.mapping}\n"
         string_representation += ")"
         return string_representation
+
+    # Método para simular un DFA.
+    def simulate(self, input_string):
+            
+        # Se obtiene el estado actual.
+        current_state = self.initial_state
+
+        # Se recorre la cadena de entrada.
+        for symbol in input_string:
+
+            # Se obtiene el estado actual con el símbolo actual.
+            current_transition = self.mapping.get(current_state, False)
+
+            if (current_transition == False):
+                return False
+
+            current_state = current_transition.get(symbol, False)
+
+            if (current_state == False):
+                return False
+
+        # Se retorna si el estado actual es de aceptación.
+        return (current_state in self.acceptance_states)

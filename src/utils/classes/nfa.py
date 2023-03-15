@@ -4,6 +4,9 @@ Universidad del Valle de Guatemala
 Santiago Taracena Puga (20017)
 """
 
+# Funciones necesarias para la simulación del NFA.
+from utils.subsets import ε_closure, move
+
 # Definición de la clase NFA.
 class NFA(object):
 
@@ -25,3 +28,18 @@ class NFA(object):
         string_representation += f"\tmapping={self.mapping}\n"
         string_representation += ")"
         return string_representation
+
+    # Método para simular un NFA.
+    def simulate(self, input_string):
+
+        # Se obtiene el conjunto de estados alcanzables desde el estado inicial.
+        current_state = ε_closure({ self.initial_state }, self.mapping)
+
+        # Se recorre la cadena de entrada.
+        for symbol in input_string:
+
+            # Se obtiene el conjunto de estados alcanzables desde el conjunto de estados actual con el símbolo actual.
+            current_state = ε_closure(move(current_state, symbol, self.mapping), self.mapping)
+
+        # Se retorna si el estado de aceptación está en el conjunto de estados actual.
+        return (self.acceptance_state in current_state)

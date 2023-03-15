@@ -70,7 +70,7 @@ def subset_construction(nfa):
     state_queue = Queue()
 
     # Inicio de la construcción de subconjuntos.
-    initial_state = ε_closure({nfa.initial_state}, nfa.mapping)
+    initial_state = ε_closure({ nfa.initial_state }, nfa.mapping)
     states[current_state] = initial_state
     state_queue.push(current_state)
     current_state += 1
@@ -105,12 +105,34 @@ def subset_construction(nfa):
             # Creación de la nueva transición en el mapping.
             mapping[state][symbol] = new_state
 
+    # Conjunto inicial de estados de aceptación.
     acceptance_states = set()
 
+    # Creación de los estados de aceptación si el estado de aceptación del NFA está en el estado actual.
     for state in states:
         if (nfa.acceptance_state in states[state]):
             acceptance_states.add(state)
 
+    # Instancia de un mapping temporal del DFA.
+    temporal_mapping = {}
+
+    # Iteración de las transiciones en el mapping original.
+    for transition in mapping:
+
+        # Nuevo conjunto de transiciones del mapping temporal.
+        temporal_mapping[transition] = {}
+
+        # Iteración en cada entrada de la transición actual.
+        for entry in mapping[transition]:
+
+            # Si la entrada no va a un estado de atrapamiento, se agrega al nuevo mapping.
+            if (mapping[transition][entry] != set()):
+                temporal_mapping[transition][entry] = mapping[transition][entry]
+
+    # Cambio del mapping del DFA.
+    mapping = temporal_mapping
+
+    # Retorno del DFA.
     return DFA(
         states=set(states.keys()),
         alphabet=alphabet,
