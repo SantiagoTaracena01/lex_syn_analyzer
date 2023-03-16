@@ -5,58 +5,45 @@ Santiago Taracena Puga (20017)
 """
 
 # Módulos importantes para la construcción de subconjuntos.
-from utils.classes.stack import Stack
 from utils.classes.queue import Queue
 from utils.classes.dfa import DFA
 
 # Definición de la función ε-closure.
-def ε_closure(element, mapping):
-
-    # Stack para almacenar los estados del conjunto.
-    state_stack = Stack()
-
-    # Push de todos los estados del conjunto al stack.
-    for state in element:
-        state_stack.push(state)
+def ε_closure(states, mapping):
 
     # Instancia inicial del resultado.
     result = set()
 
-    for state in element:
-        result.add(state)
+    # En primer lugar, todos los estados del conjunto se agregan al resultado.
+    result |= states
+    last_result = set()
 
-    # Mientras el stack no esté vacío, se obtiene el estado en el tope y se calcula su ε-closure.
-    while (not state_stack.is_empty()):
-        state = state_stack.pop()
-        if ("ε" in mapping[state]):
-            new_element = mapping[state]["ε"]
-            for reachable_state in new_element:
-                state_stack.push(reachable_state)
-            result |= new_element
+    # Mientras el resultado no sea igual al último resultado, se itera sobre el último resultado.
+    while (result != last_result):
+
+        # Se actualiza el último resultado.
+        last_result = result.copy()
+
+        # Para cada estado del último resultado, se unen los estados a los que se llega con el símbolo ε.
+        for state in last_result:
+            if ("ε" in mapping[state]):
+                result |= mapping[state]["ε"]
 
     # Retorno del resultado.
     return result
 
 # Definición de movimiento de estados con un símbolo.
-def move(element, symbol, mapping):
-
-    # Stack para almacenar los estados del conjunto.
-    state_stack = Stack()
-
-    # Push de todos los estados del conjunto al stack.
-    for state in element:
-        state_stack.push(state)
+def move(states, symbol, mapping):
 
     # Instancia inicial del resultado.
     result = set()
 
-    # Mientras el stack no esté vacío, se obtiene el estado en el tope y se calcula su move.
-    while (not state_stack.is_empty()):
-        state = state_stack.pop()
+    # Para cada estado del conjunto, se unen los estados a los que se llega con el símbolo.
+    for state in states:
         if (symbol in mapping[state]):
             result |= mapping[state][symbol]
 
-    # Retorno del resultado.
+    # Retorno del resultado obtenido.
     return result
 
 # Definición de la función de construcción de subconjuntos.

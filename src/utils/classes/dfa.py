@@ -21,7 +21,7 @@ class DFA(object):
         string_representation += f"\tstates={self.states},\n"
         string_representation += f"\talphabet={self.alphabet},\n"
         string_representation += f"\tinitial_state={self.initial_state},\n"
-        string_representation += f"\tacceptance_state={self.acceptance_states},\n"
+        string_representation += f"\tacceptance_states={self.acceptance_states},\n"
         string_representation += f"\tmapping={self.mapping}\n"
         string_representation += ")"
         return string_representation
