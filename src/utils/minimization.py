@@ -11,8 +11,7 @@ from utils.classes.dfa import DFA
 def dfa_minimization(dfa):
 
     initial_state = [dfa.initial_state]
-    acceptance_states = dfa.acceptance_states
-    mapping = dfa.mapping
+    min_acceptance_states = dfa.acceptance_states
 
     # Particiones iniciales (estados que son de aceptación y estados que no lo son).
     partitions = [
@@ -30,7 +29,7 @@ def dfa_minimization(dfa):
         partition_table = {}
 
         # Iteración sobre las entradas del mapping.
-        for entry in mapping:
+        for entry in dfa.mapping:
 
             # Cada entrada del mapping debe tener una entrada en la tabla de particiones.
             partition_table[entry] = {}
@@ -40,7 +39,8 @@ def dfa_minimization(dfa):
                 for char in dfa.alphabet:
 
                     # Cálculo del resultado de la función de transición con una entrada y caracter.
-                    result = mapping[entry][char]
+                    entry_mapping = dfa.mapping.get(entry, {})
+                    result = entry_mapping.get(char, 0)
 
                     # Si el resultado está en la partición actual, se agrega a la tabla de particiones.
                     if (result in actual_partition):
@@ -108,13 +108,13 @@ def dfa_minimization(dfa):
     initial_state = [index for index, partition in enumerate(partitions) if (dfa.initial_state in partition)][0]
 
     # Instancia de los estados de aceptación del DFA minimizado.
-    acceptance_states = []
+    min_acceptance_states = []
 
     # Obtención de los estados de aceptación del DFA minimizado.
     for index, partition in enumerate(partitions):
         for state in partition:
             if (state in dfa.acceptance_states):
-                acceptance_states.append(index)
+                min_acceptance_states.append(index)
 
     # Instancia del mapping del DFA minimizado.
     mapping = {}
@@ -126,9 +126,17 @@ def dfa_minimization(dfa):
                 new_mapping_entry = {}
                 for char in dfa.alphabet:
                     for other_state in states:
-                        if (dfa.mapping[entry][char] == other_state):
+                        entry_mapping = dfa.mapping.get(entry, {})
+                        result = entry_mapping.get(char, 0)
+                        if (result == other_state):
                             new_mapping_entry[char] = other_state
                 mapping[state] = new_mapping_entry
+
+    # Finalización de la construcción del mapping.
+    for entry in mapping:
+        for char in dfa.alphabet:
+            if (char not in mapping[entry]):
+                mapping[entry][char] = entry
 
     # Arreglo de DFAs con un estado sin transiciones.
     if (len(mapping) < 2):
@@ -141,6 +149,6 @@ def dfa_minimization(dfa):
         states=set(states),
         alphabet=dfa.alphabet,
         initial_state=initial_state,
-        acceptance_states=set(acceptance_states),
+        acceptance_states=set(min_acceptance_states),
         mapping=mapping,
     )

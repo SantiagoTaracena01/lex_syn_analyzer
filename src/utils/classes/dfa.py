@@ -43,7 +43,7 @@ class DFA(object):
 
             current_state = current_transition.get(symbol, False)
 
-            if (current_state == False):
+            if ((type(current_state) == bool) and (current_state == False)):
                 return False
 
         # Se retorna si el estado actual es de aceptación.
