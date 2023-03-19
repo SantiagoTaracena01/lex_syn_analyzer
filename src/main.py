@@ -36,7 +36,10 @@ minimized_dfa = dfa_minimization(dfa)
 show_dfa(minimized_dfa, type="min", view=False)
 print(f"\nMin-DFA: ¿La cadena {w_string} pertenece a la expresión regular {regex}? {minimized_dfa.simulate(w_string)}")
 
-direct_construction(postfix)
+# Construcción directa del DFA de la expresión regular.
+direct_dfa = direct_construction(postfix)
+show_dfa(direct_dfa, type="direct", view=False)
+print(f"\nDirect-DFA: ¿La cadena {w_string} pertenece a la expresión regular {regex}? {direct_dfa.simulate(w_string)}")
 
 # Fin del cronómetro.
 print(f"\nProceso terminado en {default_timer() - start} segundos.\n")

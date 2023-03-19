@@ -5,8 +5,10 @@ Santiago Taracena Puga (20017)
 """
 
 # Módulos necesarios para la construcción directa.
+from utils.postfix import OPERATORS
 from utils.classes.node import Node
 from utils.classes.stack import Stack
+from utils.classes.dfa import DFA
 
 # Método para construir el árbol de expresión a partir de una expresión postfix.
 def build_expression_tree(postfix):
@@ -204,10 +206,40 @@ def direct_construction(postfix):
         node.properties["lastpos"] = lastpos(node)
         node.properties["followpos"] = followpos(node)
 
-    expression_tree_root.print_tree_by_inorder()
+    # expression_tree_root.print_tree_by_inorder()
 
-    for node in node_array:
-        if (node.position != None):
-            print(node.value, node.position, set([node.position for node in node.properties["followpos"]]))
+    states = set()
+    alphabet = set([char for char in postfix if char not in set(OPERATORS) | {"ε", "#"}])
+    indexed_states = []
+    mapping = {}
+    state_stack = Stack()
+    initial_state = firstpos(expression_tree_root)
+    state_stack.push(initial_state)
+    indexed_states.append(initial_state)
 
-    print(postfix)
+    while (not state_stack.is_empty()):
+        current_state = state_stack.pop()
+        current_state_index = indexed_states.index(current_state)
+        mapping[current_state_index] = {}
+        for char in alphabet:
+            next_state = set()
+            for node in current_state:
+                if (node.value == char):
+                    next_state |= node.properties["followpos"]
+            if (next_state not in indexed_states):
+                indexed_states.append(next_state)
+                state_stack.push(next_state)
+            mapping[current_state_index][char] = indexed_states.index(next_state)
+
+    for index in range(len(indexed_states)):
+        states.add(index)
+
+    acceptance_states = set([indexed_states.index(state) for state in indexed_states if (state & lastpos(expression_tree_root) != set())])
+
+    return DFA(
+        states=states,
+        alphabet=alphabet,
+        initial_state=indexed_states.index(initial_state),
+        acceptance_states=acceptance_states,
+        mapping=mapping
+    )
