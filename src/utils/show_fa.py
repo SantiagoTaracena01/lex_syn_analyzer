@@ -55,10 +55,10 @@ def show_dfa(dfa, type="normal", view=False):
     for state in dfa.states:
 
         # Dibujo de los estados del autómata.
-        if (state == dfa.initial_state):
-            visual_dfa.node(str(state), str(state), shape="circle", style="filled")
-        elif (state in dfa.acceptance_states):
+        if (state in dfa.acceptance_states):
             visual_dfa.node(str(state), str(state), shape="doublecircle", style="filled")
+        elif (state == dfa.initial_state):
+            visual_dfa.node(str(state), str(state), shape="circle", style="filled")
         else:
             visual_dfa.node(str(state), str(state), shape="circle")
 

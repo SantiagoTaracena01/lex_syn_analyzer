@@ -258,14 +258,45 @@ def direct_construction(postfix):
     for index in range(len(indexed_states)):
         states.add(index)
 
+    # Obtención del estado inicial del DFA.
+    initial_state = indexed_states.index(initial_state)
+
     # Obtención del conjunto de estados de aceptación del DFA.
     acceptance_states = set([indexed_states.index(state) for state in indexed_states if (state & lastpos(expression_tree_root) != set())])
+    acceptance_states = acceptance_states if (len(acceptance_states) > 0) else { initial_state }
+
+    # Instancia de estados muertos del DFA.
+    dead_states = set()
+
+    # Copia de los estados para evitar errores de iteración.
+    states_copy = states.copy()
+
+    # Obtención de estados muertos del DFA.
+    for dead_state in states_copy:
+        if (all([mapping[dead_state][char] == dead_state for char in alphabet]) and (dead_state not in acceptance_states)):
+            dead_states.add(dead_state)
+            states.remove(dead_state)
+
+    # Eliminación de estados muertos del mapping.
+    for dead_state in dead_states:
+        for state in states:
+            for char in alphabet:
+                entry_mapping = mapping.get(state, {})
+                result = entry_mapping.get(char, False)
+                if ((type(result) != bool) and (mapping[state][char] == dead_state)):
+                    del mapping[state][char]
+        del mapping[dead_state]
+
+    # Arreglo de DFAs con un estado sin transiciones.
+    if (len(mapping) < 2):
+        states={ 0 }
+        mapping = { 0: { char: 0 for char in alphabet } }
 
     # Retorno del DFA.
     return DFA(
         states=states,
         alphabet=alphabet,
-        initial_state=indexed_states.index(initial_state),
+        initial_state=initial_state,
         acceptance_states=acceptance_states,
         mapping=mapping
     )

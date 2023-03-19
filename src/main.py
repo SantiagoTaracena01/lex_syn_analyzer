@@ -20,26 +20,28 @@ w_string = input("Now please input a string: ")
 # Inicio del cronómetro.
 start = default_timer()
 
-# Construcción de Thompson y obtención del NFA.
+# Obtención de la expresión postfix de la expresión regular.
 postfix = regex_infix_to_postfix(regex)
+
+# Construcción de Thompson y obtención del NFA.
 nfa = thompson_construction(postfix)
 show_nfa(nfa, view=False)
-print(f"\nNFA: ¿La cadena {w_string} pertenece a la expresión regular {regex}? {nfa.simulate(w_string)}")
+print(f"\nNFA: Does string \"{w_string}\" belongs to the language of \"{regex}\"? {nfa.simulate(w_string)}")
 
 # Construcción de Subconjuntos y obtención del DFA.
 dfa = subset_construction(nfa)
 show_dfa(dfa, view=False)
-print(f"\nDFA: ¿La cadena {w_string} pertenece a la expresión regular {regex}? {dfa.simulate(w_string)}")
+print(f"\nDFA: Does string \"{w_string}\" belongs to the language of \"{regex}\"? {dfa.simulate(w_string)}")
 
 # Minimización del DFA por particiones y obtención del DFA mínimo.
 minimized_dfa = dfa_minimization(dfa)
 show_dfa(minimized_dfa, type="min", view=False)
-print(f"\nMin-DFA: ¿La cadena {w_string} pertenece a la expresión regular {regex}? {minimized_dfa.simulate(w_string)}")
+print(f"\nMin-DFA: Does string \"{w_string}\" belongs to the language of \"{regex}\"? {minimized_dfa.simulate(w_string)}")
 
 # Construcción directa del DFA de la expresión regular.
 direct_dfa = direct_construction(postfix)
 show_dfa(direct_dfa, type="direct", view=False)
-print(f"\nDirect-DFA: ¿La cadena {w_string} pertenece a la expresión regular {regex}? {direct_dfa.simulate(w_string)}")
+print(f"\nDirect-DFA: Does string \"{w_string}\" belongs to the language of \"{regex}\"? {direct_dfa.simulate(w_string)}")
 
 # Fin del cronómetro.
-print(f"\nProceso terminado en {default_timer() - start} segundos.\n")
+print(f"\nFinished in {round(default_timer() - start, 4)} seconds.\n")

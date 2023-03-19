@@ -10,6 +10,7 @@ from utils.classes.dfa import DFA
 # Función que minimiza un DFA.
 def dfa_minimization(dfa):
 
+    # Estado inicial y estados de aceptación iniciales.
     initial_state = [dfa.initial_state]
     min_acceptance_states = dfa.acceptance_states
 
@@ -40,13 +41,13 @@ def dfa_minimization(dfa):
 
                     # Cálculo del resultado de la función de transición con una entrada y caracter.
                     entry_mapping = dfa.mapping.get(entry, {})
-                    result = entry_mapping.get(char, 0)
+                    result = entry_mapping.get(char, False)
 
                     # Si el resultado está en la partición actual, se agrega a la tabla de particiones.
                     if (result in actual_partition):
 
                         # El valor de la fila en la tabla de particiones es el índice de la partición actual.
-                        partition_table[entry][char] = index
+                        partition_table[entry][char] = index if (result != False) else "X"
 
         # Instancia de una lista para las tablas según particiones.
         splitted_tables = []
@@ -120,23 +121,16 @@ def dfa_minimization(dfa):
     mapping = {}
 
     # Obtención del mapping del DFA minimizado.
-    for state in states:
-        for entry in dfa.mapping:
-            if (state == entry):
-                new_mapping_entry = {}
-                for char in dfa.alphabet:
-                    for other_state in states:
-                        entry_mapping = dfa.mapping.get(entry, {})
-                        result = entry_mapping.get(char, 0)
-                        if (result == other_state):
-                            new_mapping_entry[char] = other_state
-                mapping[state] = new_mapping_entry
-
-    # Finalización de la construcción del mapping.
-    for entry in mapping:
+    for partition in partitions:
+        partition_state = partitions.index(partition)
+        mapping[partition_state] = {}
+        state_to_try = partition[0]
         for char in dfa.alphabet:
-            if (char not in mapping[entry]):
-                mapping[entry][char] = entry
+            entry_mapping = dfa.mapping.get(state_to_try, {})
+            result = entry_mapping.get(char, False)
+            for other_partition in partitions:
+                if ((type(result) != bool) and (result in other_partition)):
+                    mapping[partition_state][char] = partitions.index(other_partition)
 
     # Arreglo de DFAs con un estado sin transiciones.
     if (len(mapping) < 2):
