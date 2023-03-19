@@ -195,47 +195,73 @@ def followpos(node):
         else:
             return set()
 
+# Método para la construcción directa de expresión postfix a DFA.
 def direct_construction(postfix):
 
+    # Extensión de la expresión regular con el símbolo #.
     postfix = postfix + "#."
+
+    # Obtención del árbol de expresión y del arreglo de nodos.
     expression_tree_root, node_array = build_expression_tree(postfix)
 
+    # Cálculo de los conjuntos nullable, firstpos, lastpos y followpos para cada nodo.
     for node in node_array:
         node.properties["nullable"] = nullable(node)
         node.properties["firstpos"] = firstpos(node)
         node.properties["lastpos"] = lastpos(node)
         node.properties["followpos"] = followpos(node)
 
-    # expression_tree_root.print_tree_by_inorder()
-
+    # Variables importantes para el DFA.
     states = set()
     alphabet = set([char for char in postfix if char not in set(OPERATORS) | {"ε", "#"}])
     indexed_states = []
     mapping = {}
     state_stack = Stack()
+
+    # Obtención del estado inicial (firspos de la raíz) y agregación del mismo al stack.
     initial_state = firstpos(expression_tree_root)
     state_stack.push(initial_state)
     indexed_states.append(initial_state)
 
+    # Iteración en el stack de estados a meter al mapping.
     while (not state_stack.is_empty()):
+
+        # Obtención del estado actual, su índice y creación en el mapping.
         current_state = state_stack.pop()
         current_state_index = indexed_states.index(current_state)
         mapping[current_state_index] = {}
+
+        # Iteración en el alfabeto para obtener los estados siguientes.
         for char in alphabet:
+
+            # Instancia inicial del próximo estado alcanzado con el caracter actual.
             next_state = set()
+
+            # Iteración en el estado actual para obtener los estados siguientes.
             for node in current_state:
+
+                # Si el valor del nodo es el caracter, debemos agregar los followpos del nodo al conjunto de estados siguientes.
                 if (node.value == char):
+
+                    # Unión del followpos del nodo al estado siguiente.
                     next_state |= node.properties["followpos"]
+
+            # Si el estado siguiente no está indexado o registrado, se agrega al stack y al arreglo de estados indexados.
             if (next_state not in indexed_states):
                 indexed_states.append(next_state)
                 state_stack.push(next_state)
+
+            # Se agrega el estado siguiente al mapping.
             mapping[current_state_index][char] = indexed_states.index(next_state)
 
+    # Obtención del conjunto de estados del DFA.
     for index in range(len(indexed_states)):
         states.add(index)
 
+    # Obtención del conjunto de estados de aceptación del DFA.
     acceptance_states = set([indexed_states.index(state) for state in indexed_states if (state & lastpos(expression_tree_root) != set())])
 
+    # Retorno del DFA.
     return DFA(
         states=states,
         alphabet=alphabet,
