@@ -5,16 +5,22 @@ Santiago Taracena Puga (20017)
 """
 
 # Módulos necesarios para la construcción del NFA.
-from utils.postfix import regex_infix_to_postfix
-from utils.thompson import thompson_construction
-from utils.subsets import subset_construction
-from utils.minimization import dfa_minimization
+from utils.check_lexical_errors import check_lexical_errors
+from utils.regex_infix_to_postfix import regex_infix_to_postfix
+from utils.thompson_construction import thompson_construction
+from utils.subset_construction import subset_construction
+from utils.dfa_minimization import dfa_minimization
 from utils.direct_construction import direct_construction
 from utils.show_fa import show_nfa, show_dfa
 from timeit import default_timer
 
 # Ingreso de la expresión regular y la cadena de entrada.
 regex = input("\nPlease, input a regex: ")
+
+# Verificación de errores léxicos.
+check_lexical_errors(regex)
+
+# Ingreso de la cadena de entrada.
 w_string = input("Now please input a string: ")
 
 # Inicio del cronómetro.

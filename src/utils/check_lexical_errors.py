@@ -35,6 +35,19 @@ def check_lexical_errors(regex):
     if (left_parenthesis != right_parenthesis):
         sys.exit("Error: The regex has a wrong number of parenthesis.")
 
+    # Cuenta de paréntesis.
+    only_parenthesis = True
+
+    # Iteración para encontrar un carácter que no sea paréntesis.
+    for char in regex:
+        if char not in ("(", ")"):
+            only_parenthesis = False
+            break
+
+    # Verificación de que no haya solo paréntesis.
+    if (only_parenthesis):
+        sys.exit("Error: The regex can't be only parenthesis.")
+
     # Expresión regular separada.
     splitted_regex = list(regex)
 

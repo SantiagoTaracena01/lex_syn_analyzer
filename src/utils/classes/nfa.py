@@ -5,7 +5,7 @@ Santiago Taracena Puga (20017)
 """
 
 # Funciones necesarias para la simulación del NFA.
-from utils.subsets import ε_closure, move
+from utils.subset_construction import ε_closure, move
 
 # Definición de la clase NFA.
 class NFA(object):

@@ -5,7 +5,7 @@ Santiago Taracena Puga (20017)
 """
 
 # Módulos necesarios para la construcción directa.
-from utils.postfix import OPERATORS
+from utils.regex_infix_to_postfix import OPERATORS
 from utils.classes.node import Node
 from utils.classes.stack import Stack
 from utils.classes.dfa import DFA
@@ -289,7 +289,7 @@ def direct_construction(postfix):
 
     # Arreglo de DFAs con un estado sin transiciones.
     if (len(mapping) < 2):
-        states={ 0 }
+        states = { 0 }
         mapping = { 0: { char: 0 for char in alphabet } }
 
     # Retorno del DFA.

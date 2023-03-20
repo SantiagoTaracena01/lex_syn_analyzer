@@ -5,7 +5,6 @@ Santiago Taracena Puga (20017)
 """
 
 # Clases y archivos importantes.
-from utils.errors import check_lexical_errors
 from utils.classes.stack import Stack
 
 # Constantes importantes para el archivo.
@@ -39,9 +38,6 @@ def check_concatenations(regex):
 
 # Función que convierte una expresión regular de infix a postfix.
 def regex_infix_to_postfix(regex):
-
-    # Verificación de errores léxicos.
-    check_lexical_errors(regex)
 
     # Conversión a una expresión con concatenaciones explícitas.
     regex = check_concatenations(regex)

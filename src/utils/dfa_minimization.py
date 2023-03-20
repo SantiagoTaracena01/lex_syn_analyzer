@@ -122,12 +122,20 @@ def dfa_minimization(dfa):
 
     # Obtención del mapping del DFA minimizado.
     for partition in partitions:
+
+        # Estado relacionado a la partición actual.
         partition_state = partitions.index(partition)
         mapping[partition_state] = {}
         state_to_try = partition[0]
+
+        # Iteración sobre cada caracter del alfabeto.
         for char in dfa.alphabet:
+
+            # Obtención del resultado de la función de transición con una entrada y caracter.
             entry_mapping = dfa.mapping.get(state_to_try, {})
             result = entry_mapping.get(char, False)
+
+            # Nueva entrada en el mapping si el resultado está en la partición iterada.
             for other_partition in partitions:
                 if ((type(result) != bool) and (result in other_partition)):
                     mapping[partition_state][char] = partitions.index(other_partition)
