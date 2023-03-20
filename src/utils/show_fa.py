@@ -45,6 +45,7 @@ def show_dfa(dfa, type="normal", view=False):
         "normal": "dfa-output",
         "min": "min-dfa-output",
         "direct": "direct-dfa-output",
+        "min-direct": "min-direct-dfa-output"
     }
 
     # Creación del grafo.
