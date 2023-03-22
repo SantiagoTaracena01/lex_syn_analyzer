@@ -133,3 +133,10 @@ test.js
 
 # Text output files
 output
+
+# Graphviz files
+./src/out/dfa-output
+./src/out/direct-dfa-output
+./src/out/min-dfa-output
+./src/out/min-direct-dfa-output
+./src/out/nfa-output
