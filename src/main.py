@@ -29,41 +29,42 @@ from timeit import default_timer
 
 # # Obtención de la expresión postfix de la expresión regular.
 # postfix = regex_infix_to_postfix(regex)
-# print(f"Regex to postfix took {round(default_timer() - start, 4)} seconds.\n")
+# print(f"\nPostfix: {postfix}")
+# print(f"Regex to postfix took {round(default_timer() - start, 4)} seconds.")
 # start = default_timer()
 
 # # Construcción de Thompson y obtención del NFA.
 # nfa = thompson_construction(postfix)
 # show_nfa(nfa, view=False)
 # print(f"\nNFA: Does string \"{w_string}\" belongs to the language of \"{regex}\"? {nfa.simulate(w_string)}")
-# print(f"NFA construction took {round(default_timer() - start, 4)} seconds.\n")
+# print(f"NFA construction took {round(default_timer() - start, 4)} seconds.")
 # start = default_timer()
 
 # # Construcción de Subconjuntos y obtención del DFA.
 # dfa = subset_construction(nfa)
 # show_dfa(dfa, view=False)
 # print(f"\nDFA: Does string \"{w_string}\" belongs to the language of \"{regex}\"? {dfa.simulate(w_string)}")
-# print(f"DFA construction took {round(default_timer() - start, 4)} seconds.\n")
+# print(f"DFA construction took {round(default_timer() - start, 4)} seconds.")
 # start = default_timer()
-
 # # Construcción directa del DFA de la expresión regular.
+
 # direct_dfa = direct_construction(postfix)
 # show_dfa(direct_dfa, type="direct", view=False)
 # print(f"\nDirect-DFA: Does string \"{w_string}\" belongs to the language of \"{regex}\"? {direct_dfa.simulate(w_string)}")
-# print(f"Direct DFA construction took {round(default_timer() - start, 4)} seconds.\n")
+# print(f"Direct DFA construction took {round(default_timer() - start, 4)} seconds.")
 # start = default_timer()
 
 # # Minimización del DFA por particiones y obtención del DFA mínimo.
 # minimized_dfa = dfa_minimization(dfa)
 # show_dfa(minimized_dfa, type="min", view=False)
 # print(f"\nMin-DFA: Does string \"{w_string}\" belongs to the language of \"{regex}\"? {minimized_dfa.simulate(w_string)}")
-# print(f"DFA minimization took {round(default_timer() - start, 4)} seconds.\n")
+# print(f"DFA minimization took {round(default_timer() - start, 4)} seconds.")
 # start = default_timer()
 
 # # Minimización del DFA directo y obtención del DFA mínimo.
 # minimized_direct_dfa = dfa_minimization(direct_dfa)
 # show_dfa(minimized_direct_dfa, type="min-direct", view=False)
 # print(f"\nMin-Direct-DFA: Does string \"{w_string}\" belongs to the language of \"{regex}\"? {minimized_direct_dfa.simulate(w_string)}")
-# print(f"Direct DFA minimization took {round(default_timer() - start, 4)} seconds.\n")
+# print(f"Direct DFA minimization took {round(default_timer() - start, 4)} seconds.")
 
-parse_yalex("./yalex/slr-1.yal")
+yalex_regex = parse_yalex("./yalex/slr-1.yal")
