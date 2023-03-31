@@ -224,6 +224,5 @@ def parse_yalex(path):
     # Último intercambio de expresiones.
     splitted_yalex_file_regex = splitted_yalex_file_regex_copy.copy()
 
-    print("Final regex", splitted_yalex_file_regex)
-
+    # Retorno de la expresión regular del archivo yalex.
     return splitted_yalex_file_regex

@@ -10,8 +10,9 @@ from utils.regex_infix_to_postfix import regex_infix_to_postfix
 from utils.thompson_construction import thompson_construction
 from utils.subset_construction import subset_construction
 from utils.dfa_minimization import dfa_minimization
-from utils.direct_construction import direct_construction
+from utils.direct_construction import direct_construction, build_expression_tree
 from utils.show_fa import show_nfa, show_dfa
+from utils.show_tree import show_expression_tree
 from utils.parse_yalex import parse_yalex
 from timeit import default_timer
 
@@ -68,3 +69,13 @@ from timeit import default_timer
 # print(f"Direct DFA minimization took {round(default_timer() - start, 4)} seconds.")
 
 yalex_regex = parse_yalex("./yalex/slr-1.yal")
+
+yalex_regex_copy = yalex_regex.copy()
+
+for element in yalex_regex_copy:
+    if (element == "92"):
+        yalex_regex.remove(element)
+
+postfix_yalex_regex = regex_infix_to_postfix(yalex_regex)
+yalex_expression_root, _ = build_expression_tree(postfix_yalex_regex)
+show_expression_tree(yalex_expression_root)

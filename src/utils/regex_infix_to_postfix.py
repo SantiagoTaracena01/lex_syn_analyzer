@@ -17,13 +17,13 @@ IMPOSSIBLY_HIGH_PRECEDENCE = 99
 def check_concatenations(regex):
 
     # Expresión regular finalizada.
-    output = ""
+    output = []
 
     # Iteración sobre el índice y caracter de una expresión regular.
     for index, char in enumerate(regex):
 
         # Cualquier caracter se agrega a la expresión regular convertida.
-        output += char
+        output.append(char)
 
         # Los caracteres |, ( y . nunca llevarán una concatenación después de ellos.
         if ((char == "|") or (char == "(") or (char == ".")):
@@ -31,7 +31,7 @@ def check_concatenations(regex):
 
         # Condiciones para llevar una concatenación luego del caracter analizado.
         elif ((index < (len(regex) - 1)) and ((char in (")", "+", "?", "*")) or (char not in OPERATORS_AND_PARENTHESIS)) and (regex[index + 1] not in ("+", "?", "*", "|", ")"))):
-            output += "."
+            output.append(".")
 
     # Retorno de la expresión regular convertida.
     return output
@@ -43,7 +43,7 @@ def regex_infix_to_postfix(regex):
     regex = check_concatenations(regex)
 
     # Expresión postfix y stack de operaciones.
-    postfix = ""
+    postfix = []
     operator_stack = Stack()
 
     # Análisis de cada caracter de la expresión regular.
@@ -56,7 +56,7 @@ def regex_infix_to_postfix(regex):
         # Si el caracter es un paréntesis derecho, se busca su par izquierdo.
         elif (char == ")"):
             while (operator_stack.peek() and (operator_stack.peek() != "(")):
-                postfix += operator_stack.pop()
+                postfix.append(operator_stack.pop())
             operator_stack.pop()
 
         # Si el caracter es un operador en el conjunto {*, ., |} o un símbolo.
@@ -72,7 +72,7 @@ def regex_infix_to_postfix(regex):
 
                 # Si la precedencia del operador en el stack es mayor o igual a la del caracter actual, se agrega a la expresión.
                 if (peeked_precedence >= char_precedence):
-                    postfix += operator_stack.pop()
+                    postfix.append(operator_stack.pop())
 
                 # Si no, se rompe el ciclo.
                 else:
@@ -83,7 +83,7 @@ def regex_infix_to_postfix(regex):
 
     # Si el stack aún no está vacío, todos los demás operadores se agregan a la expresión.
     while (not operator_stack.is_empty()):
-        postfix += operator_stack.pop()
+        postfix.append(operator_stack.pop())
 
     # Retorno de la expresión postfix.
     return postfix
