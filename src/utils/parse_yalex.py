@@ -145,6 +145,7 @@ def parse_yalex(path):
             # Conversión de listas a expresiones regulares e instancia de nueva definición.
             regular_definitions[definition] = list_to_regex(regular_definitions[definition])
 
+    # Ciclo para eliminar listas de las definiciones regulares.
     for definition in regular_definitions:
 
         # Listas a eliminar de la expresión regular.
@@ -152,11 +153,18 @@ def parse_yalex(path):
         list_to_delete = ""
         getting_list = False
 
+        # Obtención de las listas a eliminar.
         for char in regular_definitions[definition]:
+
+            # Si nos topamos un corchete, comenzamos a obtener la lista.
             if (char == "["):
                 getting_list = True
+
+            # Si estamos obteniendo una lista, concatenamos los caracteres.
             if (getting_list):
                 list_to_delete += char
+
+            # Si encontramos un corchete cerrado, terminamos de obtener la lista.
             if (char == "]"):
                 getting_list = False
                 lists_in_definition.append(list_to_delete)
@@ -165,9 +173,6 @@ def parse_yalex(path):
         # Eliminación de las listas de la expresión regular.
         for list_to_delete in lists_in_definition:
             regular_definitions[definition] = regular_definitions[definition].replace(list_to_delete, f"({list_to_regex(list_to_delete)})")
-
-    for definition in regular_definitions:
-        print(definition, regular_definitions[definition])
 
     # Instancia de la futura expresión regular.
     yalex_file_regex = ""
@@ -203,18 +208,18 @@ def parse_yalex(path):
             deleting_regex = False
             yalex_file_regex[index] = TO_DELETE
 
-        # Si la regex se está borrando, se reemplaza el caracter por epsilon.
-        if (deleting_regex):
-            yalex_file_regex[index] = TO_DELETE
-
         # Si se encuentra un paréntesis izquierdo y un asterisco, empiezan comentarios para borrar.
         if (yalex_file_regex[index] == "(" and yalex_file_regex[index + 1] == "*"):
             deleting_regex = True
             yalex_file_regex[index] = TO_DELETE
 
         # Si se encuentra un paréntesis derecho y un asterisco, finalizan comentarios para borrar.
-        if (yalex_file_regex[index] == ")" and yalex_file_regex[index - 1] == "*"):
+        if (yalex_file_regex[index] == "*" and yalex_file_regex[index + 1] == ")"):
             deleting_regex = False
+            yalex_file_regex[index] = TO_DELETE
+
+        # Si la regex se está borrando, se reemplaza el caracter por epsilon.
+        if (deleting_regex):
             yalex_file_regex[index] = TO_DELETE
 
     # Expresión regular inicialmente creada a partir del archivo .yalex dividida por los ORs.
