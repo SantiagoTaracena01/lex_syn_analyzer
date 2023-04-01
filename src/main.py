@@ -26,15 +26,17 @@ from timeit import default_timer
 # Inicio del cronómetro.
 start = default_timer()
 
+path = "./yalex/slr-1.yal"
+
 # Construcción del árbol de la expresión regular del archivo .yal.
-yalex_regex = parse_yalex("./yalex/slr-1.yal")
+yalex_regex = parse_yalex(path)
 # print("Yalex regex", yalex_regex)
 postfix_yalex_regex = regex_infix_to_postfix(yalex_regex)
 yalex_expression_root, _ = build_expression_tree(postfix_yalex_regex)
 show_expression_tree(yalex_expression_root)
 
 # Fin del cronómetro.
-print(f"Yalex regex and tree took {round(default_timer() - start, 4)} seconds.")
+print(f"\nYalex regex and tree from file \"{path}\" took {round(default_timer() - start, 4)} seconds.\n")
 
 # # Ejemplo de la construcción del árbol.
 
