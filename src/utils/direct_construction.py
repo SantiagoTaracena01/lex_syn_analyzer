@@ -13,6 +13,11 @@ from utils.classes.dfa import DFA
 # Método para construir el árbol de expresión a partir de una expresión postfix.
 def build_expression_tree(postfix):
 
+    # Corrección de expresión regular postfix.
+    if (f"{postfix[-2]}{postfix[-1]}" != "35."):
+        postfix.append("35")
+        postfix.append(".")
+
     # Variables necesarias para la construcción del árbol.
     node_stack = Stack()
     node_array = []

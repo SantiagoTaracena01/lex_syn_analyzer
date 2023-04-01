@@ -5,16 +5,44 @@ Santiago Taracena Puga (20017)
 """
 
 # Módulos necesarios para la construcción del NFA.
-from utils.check_lexical_errors import check_lexical_errors
-from utils.regex_infix_to_postfix import regex_infix_to_postfix
-from utils.thompson_construction import thompson_construction
-from utils.subset_construction import subset_construction
-from utils.dfa_minimization import dfa_minimization
-from utils.direct_construction import direct_construction, build_expression_tree
-from utils.show_fa import show_nfa, show_dfa
-from utils.show_tree import show_expression_tree
+# from utils.check_lexical_errors import check_lexical_errors
+# from utils.regex_infix_to_postfix import regex_infix_to_postfix
+# from utils.thompson_construction import thompson_construction
+# from utils.subset_construction import subset_construction
+# from utils.dfa_minimization import dfa_minimization
+# from utils.direct_construction import direct_construction, build_expression_tree
+# from utils.show_fa import show_nfa, show_dfa
+# from utils.show_tree import show_expression_tree
+# from utils.parse_yalex import parse_yalex
+# from timeit import default_timer
+
+# Módulos necesarios para la construcción del árbol del archivo .yal.
 from utils.parse_yalex import parse_yalex
+from utils.regex_infix_to_postfix import regex_infix_to_postfix
+from utils.direct_construction import build_expression_tree
+from utils.show_tree import show_expression_tree
 from timeit import default_timer
+
+# Inicio del cronómetro.
+start = default_timer()
+
+# Construcción del árbol de la expresión regular del archivo .yal.
+yalex_regex = parse_yalex("./yalex/slr-1.yal")
+# print("Yalex regex", yalex_regex)
+postfix_yalex_regex = regex_infix_to_postfix(yalex_regex)
+yalex_expression_root, _ = build_expression_tree(postfix_yalex_regex)
+show_expression_tree(yalex_expression_root)
+
+# Fin del cronómetro.
+print(f"Yalex regex and tree took {round(default_timer() - start, 4)} seconds.")
+
+# # Ejemplo de la construcción del árbol.
+
+# initial_regex = ["(", "97", "|", "98", ")", "*", "97", "98", "98"]
+# postfix = regex_infix_to_postfix(initial_regex)
+# print("Expresión postfix", postfix)
+# expression_root, _ = build_expression_tree(postfix)
+# show_expression_tree(expression_root)
 
 # # Ingreso de la expresión regular y la cadena de entrada.
 # regex = input("\nPlease, input a regex: ")
@@ -67,8 +95,3 @@ from timeit import default_timer
 # show_dfa(minimized_direct_dfa, type="min-direct", view=False)
 # print(f"\nMin-Direct-DFA: Does string \"{w_string}\" belongs to the language of \"{regex}\"? {minimized_direct_dfa.simulate(w_string)}")
 # print(f"Direct DFA minimization took {round(default_timer() - start, 4)} seconds.")
-
-yalex_regex = parse_yalex("./yalex/slr-4.yal")
-postfix_yalex_regex = regex_infix_to_postfix(yalex_regex)
-yalex_expression_root, _ = build_expression_tree(postfix_yalex_regex)
-show_expression_tree(yalex_expression_root)
