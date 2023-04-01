@@ -271,7 +271,7 @@ def parse_yalex(path):
     # ! INICIA ÁREA DE DEBUG
 
     # print("\nParte 4 - Expresión regular del archivo.\n")
-    # print(splitted_yalex_file_regex)
+    # print("|".join(splitted_yalex_file_regex))
     # print("\n")
 
     # ! TERMINA ÁREA DE DEBUG
