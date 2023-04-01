@@ -4,32 +4,107 @@ Universidad del Valle de Guatemala
 Santiago Taracena Puga (20017)
 """
 
-from utils.regex_infix_to_postfix import OPERATORS_AND_PARENTHESIS
-
+# Función para convertir expresiones regulares entre corchetes [] en expresiones regulares procesables.
 def list_to_regex(list_to_parse):
 
+    # Variables para contar las comillas simples y verificar si hay intervalos.
     quotation_marks_counter = 0
+    double_quotation_marks_counter = 0
     interval = False
 
-    for char in list_to_parse:
-        if (char == "-"):
+    # Verificación de existencia de intervalos.
+    for index, char in enumerate(list_to_parse):
+        if ((char == "-") and ((index - 2) >= 0) and ((index + 2) < (len(list_to_parse) - 1))):
             interval = True
 
+    # Variable para determinar el paso de la iteración.
     step = 4 if (interval) else 2
 
+    # Variables para almacenar la expresión regular.
     actual_list = []
     new_element = ""
 
+    # Iteración de los caracteres de la futura lista.
     for char in list_to_parse:
+
+        # Aumento de la cuenta de comillas simples.
         if (char == "'"):
             quotation_marks_counter += 1
+
+        # Aumento de la cuenta de comillas dobles.
+        if (char == "\""):
+            double_quotation_marks_counter += 1
+
+        # Verificación de la cuenta de comillas simples.
         if ((quotation_marks_counter % step) != 0):
             new_element += char if (char != "'") else ""
         elif (((quotation_marks_counter % 2) == 0) and (0 < quotation_marks_counter)):
             actual_list.append(new_element)
             new_element = ""
 
-    return actual_list[:-1]
+        # Verificación de la cuenta de comillas dobles.
+        elif (double_quotation_marks_counter == 1):
+            new_element += char if (char != "\"") else ""
+        elif (double_quotation_marks_counter == 2):
+
+            # Agregación de cada elemento del rango a la lista.
+            for element in list(new_element):
+                actual_list.append(element)
+
+            # Lista a utilizar si se encuentran caracteres de escape.
+            future_actual_list = []
+
+            # Iteración de los elementos de la lista.
+            for index, element in enumerate(actual_list):
+
+                # Verificación de caracteres de escape.
+                if (actual_list[index - 1] == "\\"):
+                    continue
+                elif (element == "\\"):
+                    future_actual_list.append(f"\\{actual_list[index + 1]}")
+                else:
+                    future_actual_list.append(element)
+
+            # Actualización de la lista.
+            actual_list = future_actual_list.copy()
+            actual_list.append("")
+            new_element = ""
+            double_quotation_marks_counter = 0
+
+    # Eliminación del último elemento de la lista.
+    partial_result = actual_list[:-1]
+    regex_definition = ""
+
+    # Iteración de los elementos de la lista parseada.
+    for index, element in enumerate(partial_result):
+
+        # Verificación de intervalos.
+        if (("-" in element) and (len(element) > 2)):
+
+            # Conversión de intervalos a expresiones regulares.
+            interval_elements = element.split("-")
+
+            # Verificación de elementos vacíos.
+            if (interval_elements[1] == ""):
+                continue
+
+            # Iteración de los caracteres del intervalo en ASCII.
+            for char in range(ord(interval_elements[0]), ord(interval_elements[1]) + 1):
+
+                # Concatenación de los caracteres del intervalo.
+                regex_definition += f"{chr(char)}|"
+
+        # Concatenación de los elementos de la lista.
+        else:
+            regex_definition += f"{element}|"
+
+    for element in regex_definition:
+        if (element in ("(", ")", "+", "?", "*", ".")):
+            regex_definition = regex_definition.replace(element, f"'{element}'")
+
+    # Eliminación del último caracter de la expresión regular armada.
+    return regex_definition[:-1]
+
 
 # Función para parsear el archivo .yalex a expresión regular.
 def parse_yalex(path):
@@ -69,29 +144,30 @@ def parse_yalex(path):
 
             # Conversión de listas a expresiones regulares e instancia de nueva definición.
             regular_definitions[definition] = list_to_regex(regular_definitions[definition])
-            regex_definition = ""
 
-            # Iteración de los elementos de la lista parseada.
-            for element in regular_definitions[definition]:
+    for definition in regular_definitions:
 
-                # Verificación de intervalos.
-                if ("-" in element):
+        # Listas a eliminar de la expresión regular.
+        lists_in_definition = []
+        list_to_delete = ""
+        getting_list = False
 
-                    # Conversión de intervalos a expresiones regulares.
-                    interval_elements = element.split("-")
+        for char in regular_definitions[definition]:
+            if (char == "["):
+                getting_list = True
+            if (getting_list):
+                list_to_delete += char
+            if (char == "]"):
+                getting_list = False
+                lists_in_definition.append(list_to_delete)
+                list_to_delete = ""
 
-                    # Iteración de los caracteres del intervalo en ASCII.
-                    for char in range(ord(interval_elements[0]), ord(interval_elements[1]) + 1):
+        # Eliminación de las listas de la expresión regular.
+        for list_to_delete in lists_in_definition:
+            regular_definitions[definition] = regular_definitions[definition].replace(list_to_delete, f"({list_to_regex(list_to_delete)})")
 
-                        # Concatenación de los caracteres del intervalo.
-                        regex_definition += f"{chr(char)}|"
-
-                # Concatenación de los elementos de la lista.
-                else:
-                    regex_definition += f"{element}|"
-
-            # Eliminación del último caracter de la expresión regular armada.
-            regular_definitions[definition] = regex_definition[:-1]
+    for definition in regular_definitions:
+        print(definition, regular_definitions[definition])
 
     # Instancia de la futura expresión regular.
     yalex_file_regex = ""
@@ -222,6 +298,15 @@ def parse_yalex(path):
     splitted_yalex_file_regex_copy.pop()
 
     # Último intercambio de expresiones.
+    splitted_yalex_file_regex = splitted_yalex_file_regex_copy.copy()
+    splitted_yalex_file_regex_copy = []
+
+    # Eliminación de los caracteres con código 92.
+    for char in splitted_yalex_file_regex:
+        if (char != "92"):
+            splitted_yalex_file_regex_copy.append(char)
+
+    # Intercambio final.
     splitted_yalex_file_regex = splitted_yalex_file_regex_copy.copy()
 
     # Retorno de la expresión regular del archivo yalex.

@@ -68,14 +68,8 @@ from timeit import default_timer
 # print(f"\nMin-Direct-DFA: Does string \"{w_string}\" belongs to the language of \"{regex}\"? {minimized_direct_dfa.simulate(w_string)}")
 # print(f"Direct DFA minimization took {round(default_timer() - start, 4)} seconds.")
 
-yalex_regex = parse_yalex("./yalex/slr-1.yal")
-
-yalex_regex_copy = yalex_regex.copy()
-
-for element in yalex_regex_copy:
-    if (element == "92"):
-        yalex_regex.remove(element)
-
+yalex_regex = parse_yalex("./yalex/slr-2.yal")
+print(yalex_regex)
 postfix_yalex_regex = regex_infix_to_postfix(yalex_regex)
 yalex_expression_root, _ = build_expression_tree(postfix_yalex_regex)
 show_expression_tree(yalex_expression_root)
