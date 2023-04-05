@@ -7,11 +7,8 @@ Santiago Taracena Puga (20017)
 # Módulos necesarios para el archivo main.py.
 import sys
 from utils.regex_infix_to_postfix import regex_infix_to_postfix
-from utils.thompson_construction import thompson_construction
-from utils.subset_construction import subset_construction
-from utils.dfa_minimization import dfa_minimization
 from utils.direct_construction import direct_construction, build_expression_tree
-from utils.show_fa import show_nfa, show_dfa
+from utils.show_fa import show_dfa
 from utils.show_tree import show_expression_tree
 from utils.parse_yalex import parse_yalex
 from timeit import default_timer
