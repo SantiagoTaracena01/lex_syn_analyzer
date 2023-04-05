@@ -14,7 +14,7 @@ os.environ["PATH"] += os.pathsep + "C:/Program Files/Graphviz/bin"
 # Función para mostrar un nodo del árbol.
 def show_node(node, visual_tree):
     if (node is not None):
-        label = str(node.value) if ((node.left != None) or (node.right != None)) else str(chr(int(node.value)))
+        label = str(node.value) if ((node.left != None) or (node.right != None) or (node.value.startswith("#"))) else str(chr(int(node.value)))
         visual_tree.node(str(id(node)), label, shape="circle")
         if (node.left != None):
             visual_tree.edge(str(id(node)), str(id(node.left)))

@@ -4,6 +4,8 @@ Universidad del Valle de Guatemala
 Santiago Taracena Puga (20017)
 """
 
+from utils.check_lexical_errors import check_lexical_errors
+
 # Función para convertir expresiones regulares entre corchetes [] en expresiones regulares procesables.
 def list_to_regex(list_to_parse):
 
@@ -309,6 +311,11 @@ def parse_yalex(path):
         # Reemplazo de la expresión regular por su copia limpia.
         splitted_yalex_file_regex = splitted_yalex_file_regex_copy.copy()
 
+    # Chequeo de posibles errores léxicos.
+    for regex in splitted_yalex_file_regex:
+        print("Checking", regex)
+        check_lexical_errors(regex)
+
     # ! INICIA ÁREA DE DEBUG
 
     # print("\nParte 5 - Reemplazo de las definiciones regulares por sus expresiones regulares.\n")
@@ -358,6 +365,14 @@ def parse_yalex(path):
 
         # Agregación de la nueva expresión regular formateada.
         splitted_yalex_file_regex_copy.append(regex_copy)
+
+    # Símbolo final de la expresión regular.
+    regex_token_position = 0
+
+    # Proceso de agregación de los símbolos finales
+    for regex in splitted_yalex_file_regex_copy:
+        regex.append(f"#{regex_token_position}")
+        regex_token_position += 1
 
     # ! INICIA ÁREA DE DEBUG
 

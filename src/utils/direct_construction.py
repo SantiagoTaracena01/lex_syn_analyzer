@@ -203,9 +203,6 @@ def followpos(node):
 # Método para la construcción directa de expresión postfix a DFA.
 def direct_construction(postfix):
 
-    # Extensión de la expresión regular con el símbolo #.
-    postfix = postfix + "#."
-
     # Obtención del árbol de expresión y del arreglo de nodos.
     expression_tree_root, node_array = build_expression_tree(postfix)
 
