@@ -4,7 +4,24 @@ Universidad del Valle de Guatemala
 Santiago Taracena Puga (20017)
 """
 
+# Función para checar erroes léxicos en las expresiones regulares.
 from utils.check_lexical_errors import check_lexical_errors
+
+# Función para leer y retornar las líneas del archivo yalex.
+def read_file_lines(file_path):
+
+    # Lista inicial para almacenar las líneas del archivo.
+    file_lines = []
+
+    # Lectura del archivo y almacenamiento de las líneas en la lista.
+    with open(file_path, "r", encoding="utf-8") as file:
+        lines = file.readlines()
+        for line in lines:
+            if (line != "\n"):
+                file_lines.append(line.replace("\n", ""))
+
+    # Retorno de las líneas del archivo.
+    return file_lines
 
 # Función para convertir expresiones regulares entre corchetes [] en expresiones regulares procesables.
 def list_to_regex(list_to_parse):
@@ -107,34 +124,8 @@ def list_to_regex(list_to_parse):
     # Eliminación del último caracter de la expresión regular armada.
     return regex_definition[:-1]
 
-
-# Función para parsear el archivo .yalex a expresión regular.
-def parse_yalex(path):
-
-    # * Parte 1 - Lectura del archivo.
-
-    # Lista inicial para almacenar las líneas del archivo.
-    file_lines = []
-
-    # Lectura del archivo y almacenamiento de las líneas en la lista.
-    with open(path, "r", encoding="utf-8") as file:
-        lines = file.readlines()
-        for line in lines:
-            if (line != "\n"):
-                file_lines.append(line.replace("\n", ""))
-
-    # ! INICIA ÁREA DE DEBUG
-
-    # print("\nParte 1 - Lectura del archivo.\n")
-
-    # for line in file_lines:
-    #     print(line)
-
-    # print("\n")
-
-    # ! TERMINA ÁREA DE DEBUG
-
-    # * Parte 2 - Obtención de las definiciones regulares.
+# Función para obtener las definiciones regulares del archivo.
+def get_regular_definitions(file_lines):
 
     # Lista para almacenar las definiciones regulares.
     unparsed_regular_definitions = []
@@ -162,60 +153,40 @@ def parse_yalex(path):
             # Conversión de listas a expresiones regulares e instancia de nueva definición.
             regular_definitions[definition] = list_to_regex(regular_definitions[definition])
 
-    # ! INICIA ÁREA DE DEBUG
+        # Expresiones regulares que posiblemente tengan listas dentro.
+        else:
 
-    # print("\nParte 2 - Obtención de las definiciones regulares.\n")
+            # Listas a eliminar de la expresión regular.
+            lists_in_definition = []
+            list_to_delete = ""
+            getting_list = False
 
-    # for definition in regular_definitions:
-    #     print(f"{definition} = {regular_definitions[definition]}")
+            # Obtención de las listas a eliminar.
+            for char in regular_definitions[definition]:
 
-    # print("\n")
+                # Si nos topamos un corchete, comenzamos a obtener la lista.
+                if (char == "["):
+                    getting_list = True
 
-    # ! TERMINA ÁREA DE DEBUG
+                # Si estamos obteniendo una lista, concatenamos los caracteres.
+                if (getting_list):
+                    list_to_delete += char
 
-    # * Parte 3 - Eliminación de las listas de las definiciones regulares.
+                # Si encontramos un corchete cerrado, terminamos de obtener la lista.
+                if (char == "]"):
+                    getting_list = False
+                    lists_in_definition.append(list_to_delete)
+                    list_to_delete = ""
 
-    # Ciclo para eliminar listas de las definiciones regulares.
-    for definition in regular_definitions:
+            # Eliminación de las listas de la expresión regular.
+            for list_to_delete in lists_in_definition:
+                regular_definitions[definition] = regular_definitions[definition].replace(list_to_delete, f"({list_to_regex(list_to_delete)})")
 
-        # Listas a eliminar de la expresión regular.
-        lists_in_definition = []
-        list_to_delete = ""
-        getting_list = False
+    # Retorno de las definiciones regulares.
+    return regular_definitions
 
-        # Obtención de las listas a eliminar.
-        for char in regular_definitions[definition]:
-
-            # Si nos topamos un corchete, comenzamos a obtener la lista.
-            if (char == "["):
-                getting_list = True
-
-            # Si estamos obteniendo una lista, concatenamos los caracteres.
-            if (getting_list):
-                list_to_delete += char
-
-            # Si encontramos un corchete cerrado, terminamos de obtener la lista.
-            if (char == "]"):
-                getting_list = False
-                lists_in_definition.append(list_to_delete)
-                list_to_delete = ""
-
-        # Eliminación de las listas de la expresión regular.
-        for list_to_delete in lists_in_definition:
-            regular_definitions[definition] = regular_definitions[definition].replace(list_to_delete, f"({list_to_regex(list_to_delete)})")
-
-    # ! INICIA ÁREA DE DEBUG
-
-    # print("\nParte 3 - Eliminación de las listas de las definiciones regulares.\n")
-
-    # for definition in regular_definitions:
-    #     print(f"{definition} = {regular_definitions[definition]}")
-
-    # print("\n")
-
-    # ! TERMINA ÁREA DE DEBUG
-
-    # * Parte 4 - Expresión regular del archivo.
+# Función para obtener la expresión regular inicial del archivo.
+def get_file_initial_regex(file_lines):
 
     # Instancia de la futura expresión regular.
     yalex_file_regex = ""
@@ -266,19 +237,14 @@ def parse_yalex(path):
         if (deleting_regex):
             yalex_file_regex[index] = TO_DELETE
 
-    # Expresión regular inicialmente creada a partir del archivo .yalex dividida por los ORs.
-    splitted_yalex_file_regex = "".join(yalex_file_regex).replace(TO_DELETE, "").split("|")
+    # Retorno de la expresión regular inicialmente creada a partir del archivo .yalex dividida por los ORs.
+    return "".join(yalex_file_regex).replace(TO_DELETE, "").split("|")
+
+# Función para obtener la expresión regular final del archivo.
+def get_full_yalex_regex(file_regex, regular_definitions):
+
+    # Variable que indica si se encontró una definición regular en la expresión regular.
     regex_has_regular_definitions = True
-
-    # ! INICIA ÁREA DE DEBUG
-
-    # print("\nParte 4 - Expresión regular del archivo.\n")
-    # print("|".join(splitted_yalex_file_regex))
-    # print("\n")
-
-    # ! TERMINA ÁREA DE DEBUG
-
-    # * Parte 5 - Reemplazo de las definiciones regulares por sus expresiones regulares.
 
     # Ciclo que reemplaza las definiciones regulares por sus expresiones regulares.
     while (regex_has_regular_definitions):
@@ -287,10 +253,10 @@ def parse_yalex(path):
         regex_has_regular_definitions = False
 
         # Copia de la lista de expresiones regulares para evitar errores de índice.
-        splitted_yalex_file_regex_copy = splitted_yalex_file_regex.copy()
+        file_regex_copy = file_regex.copy()
 
         # Iteración sobre cada expresión regular de la definición inicial.
-        for index, regex in enumerate(splitted_yalex_file_regex):
+        for index, regex in enumerate(file_regex):
 
             # Posibles expresiones regulares a reemplazar.
             possible_regular_definitions = []
@@ -306,43 +272,38 @@ def parse_yalex(path):
             # Reemplazo por la expresión regular de mayor jerarquía.
             if (len(possible_regular_definitions) > 0):
                 found_regular_definition = possible_regular_definitions[-1]
-                splitted_yalex_file_regex_copy[index] = splitted_yalex_file_regex_copy[index].replace(found_regular_definition, f"({regular_definitions[found_regular_definition]})")
+                file_regex_copy[index] = file_regex_copy[index].replace(found_regular_definition, f"({regular_definitions[found_regular_definition]})")
 
         # Reemplazo de la expresión regular por su copia limpia.
-        splitted_yalex_file_regex = splitted_yalex_file_regex_copy.copy()
+        file_regex = file_regex_copy.copy()
 
     # Chequeo de posibles errores léxicos.
-    for regex in splitted_yalex_file_regex:
-        print("Checking", regex)
+    for regex in file_regex:
         check_lexical_errors(regex)
 
-    # ! INICIA ÁREA DE DEBUG
+    # Retorno de la expresión regular final.
+    return file_regex
 
-    # print("\nParte 5 - Reemplazo de las definiciones regulares por sus expresiones regulares.\n")
-    # print("|".join(splitted_yalex_file_regex))
-    # print("\n")
-
-    # ! TERMINA ÁREA DE DEBUG
-
-    # * Parte 6 - Conversión a ASCII.
+# Función para convertir los símbolos de la expresión regular a ASCII.
+def regex_chars_to_ascii(file_regex):
 
     # Nueva copia de la expresión regular para separar las subexpresiones en listas.
-    splitted_yalex_file_regex_copy = splitted_yalex_file_regex.copy()
+    file_regex_copy = file_regex.copy()
 
     # Separación de las subexpresiones en listas.
-    for regex in splitted_yalex_file_regex_copy:
-        regex_to_split = splitted_yalex_file_regex.pop(0)
-        splitted_yalex_file_regex.append(list(regex_to_split))
+    for regex in file_regex_copy:
+        regex_to_split = file_regex.pop(0)
+        file_regex.append(list(regex_to_split))
 
     # Nueva copia de la expresión regular para convertir a ASCII.
-    splitted_yalex_file_regex_copy = splitted_yalex_file_regex.copy()
+    file_regex_copy = file_regex.copy()
 
     # Conversión de símbolos a ASCII.
-    for index, regex in enumerate(splitted_yalex_file_regex):
+    for regex in file_regex:
 
         # Nueva expresión regular vacía a colocar en la expresión del archivo.
         regex_copy = []
-        splitted_yalex_file_regex_copy.remove(regex)
+        file_regex_copy.remove(regex)
 
         # Iteración sobre cada símbolo de la expresión regular.
         for jndex, char in enumerate(regex):
@@ -364,61 +325,135 @@ def parse_yalex(path):
                 regex_copy.append(str(ord(char)))
 
         # Agregación de la nueva expresión regular formateada.
-        splitted_yalex_file_regex_copy.append(regex_copy)
+        file_regex_copy.append(regex_copy)
 
     # Símbolo final de la expresión regular.
     regex_token_position = 0
 
     # Proceso de agregación de los símbolos finales
-    for regex in splitted_yalex_file_regex_copy:
+    for regex in file_regex_copy:
         regex.append(f"#{regex_token_position}")
         regex_token_position += 1
+
+    # Retorno de la expresión regular final.
+    return file_regex_copy
+
+# Función para finalizar la estructuración de la expresión regular.
+def finish_file_regex(file_regex):
+
+    # Asignación final de la expresión regular con su copia limpia.
+    file_regex_copy = file_regex.copy()
+    file_regex = []
+
+    # Conversión de todas las subexpresiones a una sola lista de caracteres.
+    for regex in file_regex_copy:
+        for char in regex:
+            file_regex.append(char)
+        file_regex.append("|")
+
+    # Eliminación del último OR.
+    file_regex.pop()
+
+    # Último intercambio de expresiones.
+    file_regex_copy = file_regex.copy()
+    file_regex = []
+
+    # Eliminación de los caracteres con código 92.
+    for char in file_regex_copy:
+        if (char != "92"):
+            file_regex.append(char)
+
+    # Retorno de la expresión regular final.
+    return file_regex
+
+# Función para parsear el archivo .yalex a expresión regular.
+def parse_yalex(path):
+
+    # * Parte 1 - Lectura del archivo.
+
+    # Lista inicial para almacenar las líneas del archivo.
+    file_lines = read_file_lines(path)
+
+    # ! INICIA ÁREA DE DEBUG
+
+    # print("\nParte 1 - Lectura del archivo.\n")
+
+    # for line in file_lines:
+    #     print(line)
+
+    # print("\n")
+
+    # ! TERMINA ÁREA DE DEBUG
+
+    # * Parte 2 - Obtención de las definiciones regulares.
+
+    regular_definitions = get_regular_definitions(file_lines)
+
+    # ! INICIA ÁREA DE DEBUG
+
+    # print("\nParte 2 - Obtención de las definiciones regulares.\n")
+
+    # for definition in regular_definitions:
+    #     print(f"{definition} = {regular_definitions[definition]}")
+
+    # print("\n")
+
+    # ! TERMINA ÁREA DE DEBUG
+
+    # * Parte 3 - Expresión regular del archivo.
+
+    # Expresión regular inicialmente creada a partir del archivo .yalex dividida por los ORs.
+    file_regex = get_file_initial_regex(file_lines)
+
+    # ! INICIA ÁREA DE DEBUG
+
+    # print("\nParte 4 - Expresión regular del archivo.\n")
+    # print("|".join(splitted_yalex_file_regex))
+    # print("\n")
+
+    # ! TERMINA ÁREA DE DEBUG
+
+    # * Parte 4 - Reemplazo de las definiciones regulares por sus expresiones regulares.
+
+    # Expresión regular final del archivo.
+    complete_file_regex = get_full_yalex_regex(file_regex, regular_definitions)
+
+    # ! INICIA ÁREA DE DEBUG
+
+    # print("\nParte 5 - Reemplazo de las definiciones regulares por sus expresiones regulares.\n")
+    # print("|".join(complete_file_regex))
+    # print("\n")
+
+    # ! TERMINA ÁREA DE DEBUG
+
+    # * Parte 5 - Conversión a ASCII.
+
+    # Expresión regular final del archivo en ASCII.
+    complete_file_regex = regex_chars_to_ascii(complete_file_regex)
 
     # ! INICIA ÁREA DE DEBUG
 
     # print("\nParte 6 - Conversión a ASCII.\n")
 
-    # for regex in splitted_yalex_file_regex_copy:
+    # for regex in complete_file_regex:
     #     print(regex)
 
     # print("\n")
 
     # ! TERMINA ÁREA DE DEBUG
 
-    # * Parte 7 - Conversión a una sola lista de caracteres.
+    # * Parte 6 - Conversión a una sola lista de caracteres.
 
-    # Asignación final de la expresión regular con su copia limpia.
-    splitted_yalex_file_regex = splitted_yalex_file_regex_copy.copy()
-    splitted_yalex_file_regex_copy = []
-
-    # Conversión de todas las subexpresiones a una sola lista de caracteres.
-    for regex in splitted_yalex_file_regex:
-        for char in regex:
-            splitted_yalex_file_regex_copy.append(char)
-        splitted_yalex_file_regex_copy.append("|")
-
-    # Eliminación del último OR.
-    splitted_yalex_file_regex_copy.pop()
-
-    # Último intercambio de expresiones.
-    splitted_yalex_file_regex = splitted_yalex_file_regex_copy.copy()
-    splitted_yalex_file_regex_copy = []
-
-    # Eliminación de los caracteres con código 92.
-    for char in splitted_yalex_file_regex:
-        if (char != "92"):
-            splitted_yalex_file_regex_copy.append(char)
-
-    # Intercambio final.
-    splitted_yalex_file_regex = splitted_yalex_file_regex_copy.copy()
+    # Expresión regular final del archivo en ASCII y en una sola lista de caracteres.
+    complete_file_regex = finish_file_regex(complete_file_regex)
 
     # ! INICIA ÁREA DE DEBUG
 
     # print("\nParte 7 - Conversión a una sola lista de caracteres.\n")
-    # print(splitted_yalex_file_regex)
+    # print(complete_file_regex)
     # print("\n")
 
     # ! TERMINA ÁREA DE DEBUG
 
     # Retorno de la expresión regular del archivo yalex.
-    return splitted_yalex_file_regex
+    return complete_file_regex
