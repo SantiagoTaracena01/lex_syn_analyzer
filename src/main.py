@@ -21,6 +21,7 @@ path = sys.argv[1] if (len(sys.argv) > 1) else "./yalex/slr-1.yal"
 
 # Construcción del árbol de la expresión regular del archivo .yal.
 yalex_regex = parse_yalex(path)
+print(yalex_regex)
 postfix_yalex_regex = regex_infix_to_postfix(yalex_regex)
 yalex_expression_root, _ = build_expression_tree(postfix_yalex_regex)
 show_expression_tree(yalex_expression_root)

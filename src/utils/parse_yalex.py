@@ -18,7 +18,7 @@ def read_file_lines(file_path):
         lines = file.readlines()
         for line in lines:
             if (line != "\n"):
-                file_lines.append(line.replace("\n", ""))
+                file_lines.append(line.replace("\n", "").strip())
 
     # Retorno de las líneas del archivo.
     return file_lines
@@ -118,7 +118,7 @@ def list_to_regex(list_to_parse):
             regex_definition += f"{element}|"
 
     for element in regex_definition:
-        if (element in ("(", ")", "+", "?", "*", ".")):
+        if (element in ("(", ")", "+", "?", "*")):
             regex_definition = regex_definition.replace(element, f"'{element}'")
 
     # Eliminación del último caracter de la expresión regular armada.
@@ -209,17 +209,30 @@ def get_file_initial_regex(file_lines):
     deleting_regex = False
     TO_DELETE = "ε"
 
+    # Instancia del token de la expresión regular.
+    regex_token = ""
+    regex_tokens = ["WHITESPACE"]
+    getting_token = False
+
     # Ciclo que elimina los caracteres que no son parte de la expresión regular.
     for index, char in enumerate(yalex_file_regex):
-
-        # Si se encuentra una llave izquierda empieza código para borrar.
-        if (char == "{"):
-            deleting_regex = True
-            yalex_file_regex[index] = TO_DELETE
 
         # Si se encuentra una llave derecha finaliza código para borrar.
         if (char == "}"):
             deleting_regex = False
+            getting_token = False
+            regex_tokens.append(regex_token)
+            regex_token = ""
+            yalex_file_regex[index] = TO_DELETE
+
+        # Si se está recorriendo un token, se guarda en su variable.
+        if (getting_token):
+            regex_token += char
+
+        # Si se encuentra una llave izquierda empieza código para borrar.
+        if (char == "{"):
+            deleting_regex = True
+            getting_token = True
             yalex_file_regex[index] = TO_DELETE
 
         # Si se encuentra un paréntesis izquierdo y un asterisco, empiezan comentarios para borrar.
@@ -237,8 +250,15 @@ def get_file_initial_regex(file_lines):
         if (deleting_regex):
             yalex_file_regex[index] = TO_DELETE
 
-    # Retorno de la expresión regular inicialmente creada a partir del archivo .yalex dividida por los ORs.
-    return "".join(yalex_file_regex).replace(TO_DELETE, "").split("|")
+    # Lista para almacenar los tokens exclusivamente.
+    actual_regex_tokens = []
+
+    # Limpieza de los tokens obtenidos entre llaves.
+    for token in regex_tokens:
+        actual_regex_tokens.append(token.replace("return", ""))
+
+    # Retorno de la expresión regular inicialmente creada a partir del archivo .yalex dividida por los ORs (y de los tokens).
+    return "".join(yalex_file_regex).replace(TO_DELETE, "").split("|"), actual_regex_tokens
 
 # Función para obtener la expresión regular final del archivo.
 def get_full_yalex_regex(file_regex, regular_definitions):
@@ -309,11 +329,11 @@ def regex_chars_to_ascii(file_regex):
         for jndex, char in enumerate(regex):
 
             # Si el símbolo es un operador entre comillas, se convierte a ASCII.
-            if (jndex < (len(regex) - 1) and (char in ("(", ")", "+", "?", "*", ".", "|")) and (regex[jndex - 1] == "'") and (regex[jndex + 1] == "'")):
+            if (jndex < (len(regex) - 1) and (char in ("(", ")", "+", "?", "*", "|")) and (regex[jndex - 1] == "'") and (regex[jndex + 1] == "'")):
                 regex_copy.append(str(ord(char)))
 
             # Si el símbolo es un operador sin comillas, se agrega sin convertir.
-            elif (char in ("(", ")", "+", "?", "*", ".", "|")):
+            elif (char in ("(", ")", "+", "?", "*", "|")):
                 regex_copy.append(char)
 
             # Si el símbolo es una comilla, sólo se ignora.
@@ -322,6 +342,7 @@ def regex_chars_to_ascii(file_regex):
 
             # Para cualquier otro símbolo, se agrega convertido a ASCII.
             else:
+                print(char)
                 regex_copy.append(str(ord(char)))
 
         # Agregación de la nueva expresión regular formateada.
@@ -403,13 +424,14 @@ def parse_yalex(path):
     # * Parte 3 - Expresión regular del archivo.
 
     # Expresión regular inicialmente creada a partir del archivo .yalex dividida por los ORs.
-    file_regex = get_file_initial_regex(file_lines)
+    file_regex, regex_tokens = get_file_initial_regex(file_lines)
 
     # ! INICIA ÁREA DE DEBUG
 
-    # print("\nParte 4 - Expresión regular del archivo.\n")
-    # print("|".join(splitted_yalex_file_regex))
-    # print("\n")
+    print("\nParte 3 - Expresión regular del archivo.\n")
+    print("|".join(file_regex))
+    print(regex_tokens)
+    print("\n")
 
     # ! TERMINA ÁREA DE DEBUG
 
@@ -420,7 +442,7 @@ def parse_yalex(path):
 
     # ! INICIA ÁREA DE DEBUG
 
-    # print("\nParte 5 - Reemplazo de las definiciones regulares por sus expresiones regulares.\n")
+    # print("\nParte 4 - Reemplazo de las definiciones regulares por sus expresiones regulares.\n")
     # print("|".join(complete_file_regex))
     # print("\n")
 
@@ -433,7 +455,7 @@ def parse_yalex(path):
 
     # ! INICIA ÁREA DE DEBUG
 
-    # print("\nParte 6 - Conversión a ASCII.\n")
+    # print("\nParte 5 - Conversión a ASCII.\n")
 
     # for regex in complete_file_regex:
     #     print(regex)
@@ -449,7 +471,7 @@ def parse_yalex(path):
 
     # ! INICIA ÁREA DE DEBUG
 
-    # print("\nParte 7 - Conversión a una sola lista de caracteres.\n")
+    # print("\nParte 6 - Conversión a una sola lista de caracteres.\n")
     # print(complete_file_regex)
     # print("\n")
 
