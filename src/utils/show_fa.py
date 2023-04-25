@@ -55,8 +55,10 @@ def show_dfa(dfa, type="normal", view=False):
     # Iteración para dibujar los estados.
     for state in dfa.states:
 
+        acceptance_states_id = [acceptance_state[0] for acceptance_state in dfa.acceptance_states]
+
         # Dibujo de los estados del autómata.
-        if (state in dfa.acceptance_states):
+        if (state in acceptance_states_id):
             visual_dfa.node(str(state), str(state), shape="doublecircle", style="filled")
         elif (state == dfa.initial_state):
             visual_dfa.node(str(state), str(state), shape="circle", style="filled")

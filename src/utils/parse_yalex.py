@@ -7,6 +7,9 @@ Santiago Taracena Puga (20017)
 # Función para checar erroes léxicos en las expresiones regulares.
 from utils.check_lexical_errors import check_lexical_errors
 
+# Función para encontrar todas las ocurrencias de un substring dentro de un string y devolver sus índices.
+find_all = lambda string, substring: [i for i in range(len(string)) if string.startswith(substring, i)]
+
 # Función para leer y retornar las líneas del archivo yalex.
 def read_file_lines(file_path):
 
@@ -186,7 +189,7 @@ def get_regular_definitions(file_lines):
     return regular_definitions
 
 # Función para obtener la expresión regular inicial del archivo.
-def get_file_initial_regex(file_lines):
+def get_file_initial_regex_and_tokens(file_lines):
 
     # Instancia de la futura expresión regular.
     yalex_file_regex = ""
@@ -205,14 +208,14 @@ def get_file_initial_regex(file_lines):
             yalex_file_regex += line
 
     # Eliminación de espacios en blanco.
-    yalex_file_regex = list(yalex_file_regex.replace(" ", ""))
+    yalex_file_regex = list(yalex_file_regex)
     deleting_regex = False
     TO_DELETE = "ε"
 
     # Instancia del token de la expresión regular.
-    regex_token = ""
-    regex_tokens = ["WHITESPACE"]
-    getting_token = False
+    regex_actual_code = ""
+    regex_associated_code = []
+    getting_code = False
 
     # Ciclo que elimina los caracteres que no son parte de la expresión regular.
     for index, char in enumerate(yalex_file_regex):
@@ -220,19 +223,19 @@ def get_file_initial_regex(file_lines):
         # Si se encuentra una llave derecha finaliza código para borrar.
         if (char == "}"):
             deleting_regex = False
-            getting_token = False
-            regex_tokens.append(regex_token)
-            regex_token = ""
+            getting_code = False
+            regex_associated_code.append(regex_actual_code)
+            regex_actual_code = ""
             yalex_file_regex[index] = TO_DELETE
 
         # Si se está recorriendo un token, se guarda en su variable.
-        if (getting_token):
-            regex_token += char
+        if getting_code:
+            regex_actual_code += char
 
         # Si se encuentra una llave izquierda empieza código para borrar.
         if (char == "{"):
             deleting_regex = True
-            getting_token = True
+            getting_code = True
             yalex_file_regex[index] = TO_DELETE
 
         # Si se encuentra un paréntesis izquierdo y un asterisco, empiezan comentarios para borrar.
@@ -250,15 +253,41 @@ def get_file_initial_regex(file_lines):
         if (deleting_regex):
             yalex_file_regex[index] = TO_DELETE
 
-    # Lista para almacenar los tokens exclusivamente.
-    actual_regex_tokens = []
+    # Limpieza final de los datos a retornar.
+    clean_yalex_file_regex = "".join(yalex_file_regex).replace(TO_DELETE, "").split("|")
+    yalex_file_regex = [char.replace(" ", "") for char in clean_yalex_file_regex]
+    regex_associated_code = [token.strip() for token in regex_associated_code]
 
-    # Limpieza de los tokens obtenidos entre llaves.
-    for token in regex_tokens:
-        actual_regex_tokens.append(token.replace("return", ""))
+    # Obtención de los tokens de la expresión regular.
+    regex_code_and_tokens = []
+    code_return_positions = [find_all(code, "return") for code in regex_associated_code]
+    token_to_return = ""
+
+    # Iteración de los códigos y posiciones.
+    for code, positions in zip(regex_associated_code, code_return_positions):
+        for position in positions:
+
+            # Inicio de la lectura del token sumando los caracteres de "return "
+            RETURN_CHARACTERS = 7
+            token_recognition_position = (position + RETURN_CHARACTERS)
+
+            # Lectura del token mientras el índice no supere la longitud del código y no se encuentre un espacio.
+            while ((token_recognition_position < len(code)) and (code[token_recognition_position] != " ")):
+                token_to_return += code[token_recognition_position]
+                token_recognition_position += 1
+
+            # Agregado del código y token a la lista, y eliminación del token agregado.
+            regex_code_and_tokens.append((code, token_to_return))
+            token_to_return = ""
+
+    if (len(yalex_file_regex) != len(regex_code_and_tokens)):
+        actual_regex_code_and_tokens = regex_code_and_tokens.copy()
+        regex_code_and_tokens = [("return WHITESPACE", "WHITESPACE")]
+        for entry in actual_regex_code_and_tokens:
+            regex_code_and_tokens.append(entry)
 
     # Retorno de la expresión regular inicialmente creada a partir del archivo .yalex dividida por los ORs (y de los tokens).
-    return "".join(yalex_file_regex).replace(TO_DELETE, "").split("|"), actual_regex_tokens
+    return yalex_file_regex, regex_code_and_tokens
 
 # Función para obtener la expresión regular final del archivo.
 def get_full_yalex_regex(file_regex, regular_definitions):
@@ -332,6 +361,28 @@ def regex_chars_to_ascii(file_regex):
             if (jndex < (len(regex) - 1) and (char in ("(", ")", "+", "?", "*", "|")) and (regex[jndex - 1] == "'") and (regex[jndex + 1] == "'")):
                 regex_copy.append(str(ord(char)))
 
+            # Si el símbolo es un operador con \, se convierte a ASCII junto con el \.
+            elif (regex[jndex - 1] == "\\"):
+                regex_copy.pop()
+                if (char == "n"):
+                    regex_copy.append(str(ord("\n")))
+                elif (char == "t"):
+                    regex_copy.append(str(ord("\t")))
+                elif (char == "r"):
+                    regex_copy.append(str(ord("\r")))
+                elif (char == "f"):
+                    regex_copy.append(str(ord("\f")))
+                elif (char == "v"):
+                    regex_copy.append(str(ord("\v")))
+                elif (char == "b"):
+                    regex_copy.append(str(ord("\b")))
+                elif (char == "a"):
+                    regex_copy.append(str(ord("\a")))
+                elif (char == "0"):
+                    regex_copy.append(str(ord("\0")))
+                elif (char == "s"):
+                    regex_copy.append(str(ord(" ")))
+
             # Si el símbolo es un operador sin comillas, se agrega sin convertir.
             elif (char in ("(", ")", "+", "?", "*", "|")):
                 regex_copy.append(char)
@@ -342,7 +393,6 @@ def regex_chars_to_ascii(file_regex):
 
             # Para cualquier otro símbolo, se agrega convertido a ASCII.
             else:
-                print(char)
                 regex_copy.append(str(ord(char)))
 
         # Agregación de la nueva expresión regular formateada.
@@ -424,14 +474,14 @@ def parse_yalex(path):
     # * Parte 3 - Expresión regular del archivo.
 
     # Expresión regular inicialmente creada a partir del archivo .yalex dividida por los ORs.
-    file_regex, regex_tokens = get_file_initial_regex(file_lines)
+    file_regex, regex_code_and_tokens = get_file_initial_regex_and_tokens(file_lines)
 
     # ! INICIA ÁREA DE DEBUG
 
-    print("\nParte 3 - Expresión regular del archivo.\n")
-    print("|".join(file_regex))
-    print(regex_tokens)
-    print("\n")
+    # print("\nParte 3 - Expresión regular del archivo.\n")
+    # print("|".join(file_regex))
+    # print(regex_code_and_tokens)
+    # print("\n")
 
     # ! TERMINA ÁREA DE DEBUG
 
@@ -478,4 +528,4 @@ def parse_yalex(path):
     # ! TERMINA ÁREA DE DEBUG
 
     # Retorno de la expresión regular del archivo yalex.
-    return complete_file_regex
+    return complete_file_regex, regex_code_and_tokens

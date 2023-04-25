@@ -94,7 +94,7 @@ def build_expression_tree(postfix):
 
 # Método para calcular si un nodo es nullable o no.
 def nullable(node):
-    
+
     # Cálculo del caso base de nullable, es decir, una hoja.
     if ((node.left == None) and (node.right == None)):
 
@@ -201,7 +201,7 @@ def followpos(node):
             return set()
 
 # Método para la construcción directa de expresión postfix a DFA.
-def direct_construction(postfix):
+def direct_construction(postfix, tokens):
 
     # Obtención del árbol de expresión y del arreglo de nodos.
     expression_tree_root, node_array = build_expression_tree(postfix)
@@ -293,6 +293,19 @@ def direct_construction(postfix):
     if (len(mapping) < 2):
         states = { 0 }
         mapping = { 0: { char: 0 for char in alphabet } }
+
+    # Agregación de los estados de aceptación y sus tokens.
+    for state in states:
+        for index in range(len(tokens)):
+            if (f"#{index}" in mapping[state]):
+                acceptance_states.add((state, tokens[index]))
+
+    # Eliminación de los estados de aceptación y sus tokens del conjunto de estados.
+    acceptance_states_copy = acceptance_states.copy()
+
+    for state in acceptance_states_copy:
+        if (type(state) != tuple):
+            acceptance_states.remove(state)
 
     # Retorno del DFA.
     return DFA(
