@@ -5,10 +5,13 @@ Santiago Taracena Puga (20017)
 """
 
 # Función para simular un archivo .yal.
-def simulate_yalex_file(path, dfa, return_token):
+def simulate_yalex_file(path, output_file, dfa, return_token):
 
     # Archivo en forma de string inicial.
     file_string = ""
+
+    # Archivo de salida en forma de líneas.
+    output_file_lines = []
 
     # Lectura del archivo de prueba.
     with open(path, "r", newline="") as file:
@@ -22,9 +25,15 @@ def simulate_yalex_file(path, dfa, return_token):
     # Variables de la simulación y lookahead máximo
     i, j = 0, 0
     MAX_LOOK_AHEAD = 3
+    iteration = 0
+    file_string_length = len(file_string)
 
     # Mientras aún quede archivo para simular.
     while (len(file_string) > 0):
+
+        # Control de iteraciones del archivo.
+        if (iteration > (5 * file_string_length)):
+            break
 
         # String a simular (inicia con el primer caracter del archivo).
         if (j < len(file_string)):
@@ -43,7 +52,7 @@ def simulate_yalex_file(path, dfa, return_token):
         if (not result):
 
             # Se imprime el error léxico y se reinicia la simulación.
-            print(f"Found lexical error: \"{''.join([chr(int(char)) for char in simulated_string])}\" with ASCII {simulated_string}\n")
+            output_file_lines.append(f"!!! Found lexical error: \"{''.join([chr(int(char)) for char in simulated_string])}\" with ASCII {simulated_string}\n\n")
             i += 1
             j = i
 
@@ -64,13 +73,16 @@ def simulate_yalex_file(path, dfa, return_token):
                 i += 1 if (len(file_string) > 1) else 0
 
                 # Agregado del siguiente caracter al string a simular.
-                simulated_string.append(file_string[i])
+                if (i < len(file_string)):
+                    simulated_string.append(file_string[i])
+                else:
+                    simulated_string.append(file_string[0])
 
                 # Si sólo queda un último caracter en el archivo, se acaba la simulación.
                 if (len(file_string) == 1):
 
                     # Impresión del último token y finalización de la simulación.
-                    print(f"Found token {last_token}: \"{''.join([chr(int(char)) for char in simulated_string[:-1]])}\" with ASCII {simulated_string[:-1]}")
+                    output_file_lines.append(f"-> Found token {last_token}: \"{''.join([chr(int(char)) for char in simulated_string[:-1]])}\" with ASCII {simulated_string[:-1]}\n\n")
                     file_string = []
                     break
 
@@ -98,12 +110,30 @@ def simulate_yalex_file(path, dfa, return_token):
                         break
                     else:
                         look_ahead += 1
-                
+
+                # Si no se aceptó el string con el lookahead, se imprime el último token aceptado y se reinicia la simulación.
                 else:
-                    print(f"Found token {last_token}: \"{''.join([chr(int(char)) for char in string_before_look_ahead[:-1]])}\" with ASCII {string_before_look_ahead[:-1]}\n")
+
+                    # Impresión del último token aceptado y reinicio de la simulación.
+                    output_file_lines.append(f"-> Found token {last_token}: \"{''.join([chr(int(char)) for char in string_before_look_ahead[:-1]])}\" with ASCII {string_before_look_ahead[:-1]}\n\n")
                     file_string = file_string[i:]
                     i, j = 0, 0
-                    simulated_string = [file_string[j]]
+                    if (len(file_string) == 0):
+                        break
+                    simulated_string = [file_string[0]] if (j > (len(file_string) - 1)) else [file_string[j]]
                     break
 
-    print("\n")
+            iteration += 1
+
+            # Control de iteraciones del archivo.
+            if (iteration >  (5 * file_string_length)):
+                break
+
+    # Escritura del archivo de output de la simulación.
+    with open(output_file, "w", newline="\n") as file:
+        file.write(f"- * - * - \"{path}\" simulation results: - * - * -\n\n")
+        for line in output_file_lines:
+            file.write(line)
+
+    # Impresión de la simulación exitosa.
+    print(f"\nFile \"{path}\" simulated successfully. Check \"{output_file}\".\n")

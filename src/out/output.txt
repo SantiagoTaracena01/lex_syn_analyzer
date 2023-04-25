@@ -1,0 +1,41 @@
+- * - * - "./tests/slr-1-test.txt" simulation results: - * - * -
+
+-> Found token ID: "myId" with ASCII ['109', '121', '73', '100']
+
+-> Found token WHITESPACE: "
+" with ASCII ['10']
+
+-> Found token ID: "santiago" with ASCII ['115', '97', '110', '116', '105', '97', '103', '111']
+
+-> Found token WHITESPACE: "
+" with ASCII ['10']
+
+-> Found token ID: "hollow01" with ASCII ['104', '111', '108', '108', '111', '119', '48', '49']
+
+-> Found token WHITESPACE: "
+" with ASCII ['10']
+
+-> Found token LPAREN: "(" with ASCII ['40']
+
+-> Found token WHITESPACE: "
+" with ASCII ['10']
+
+-> Found token PLUS: "+" with ASCII ['43']
+
+-> Found token WHITESPACE: "
+" with ASCII ['10']
+
+-> Found token TIMES: "*" with ASCII ['42']
+
+-> Found token WHITESPACE: "
+" with ASCII ['10']
+
+!!! Found lexical error: "5" with ASCII ['53']
+
+!!! Found lexical error: "0" with ASCII ['48']
+
+-> Found token WHITESPACE: "
+" with ASCII ['10']
+
+-> Found token RPAREN: ")" with ASCII ['41']
+

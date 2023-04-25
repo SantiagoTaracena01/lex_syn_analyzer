@@ -49,6 +49,7 @@ class DFA(object):
         # Nuevos estados de aceptación para el DFA (sin los tokens).
         actual_acceptance_states = [state[0] for state in self.acceptance_states]
 
+        # Retorno del token y el estado de aceptación.
         for state in self.acceptance_states:
             if (state[0] == current_state):
                 return True, state[1][1]

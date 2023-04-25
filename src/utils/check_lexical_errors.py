@@ -7,6 +7,7 @@ Santiago Taracena Puga (20017)
 # Librería sys para salir del programa en caso de error.
 import sys
 
+# Operadores de una expresión regular.
 OPERATORS = ("+", "?", "*", ".", "|")
 
 # Función para checar errores léxicos de la expresión regular.

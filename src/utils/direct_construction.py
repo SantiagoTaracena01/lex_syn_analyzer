@@ -303,6 +303,7 @@ def direct_construction(postfix, tokens):
     # Eliminación de los estados de aceptación y sus tokens del conjunto de estados.
     acceptance_states_copy = acceptance_states.copy()
 
+    # Eliminación de los estados de aceptación y sus tokens del conjunto de estados si no son tuplas.
     for state in acceptance_states_copy:
         if (type(state) != tuple):
             acceptance_states.remove(state)
