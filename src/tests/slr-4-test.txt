@@ -1,0 +1,9 @@
+myNumber = 2.4E+03;
+myId = this_is_my_id;
+a = 12;
+b = 3;
+a / b;
+bool = a < b;
+_
+(a * 1.2E-02);
+*
