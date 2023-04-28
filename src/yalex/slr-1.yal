@@ -10,6 +10,8 @@ let id = letter(letter|digit)*
 
 rule tokens =
     ws
+  | "if"  {return IF}
+  | "ifE"  {return IFE}  
   | id        { return ID }               (* Cambie por una acción válida que devuelva el token *)
   | '+'       { return PLUS }
   | '*'       { return TIMES }

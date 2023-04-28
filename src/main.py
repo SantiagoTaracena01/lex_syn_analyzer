@@ -25,5 +25,10 @@ postfix_yalex_regex = regex_infix_to_postfix(yalex_regex)
 dfa = direct_construction(postfix_yalex_regex, yalex_parser_code)
 show_dfa(dfa, type="direct", view=False)
 
+my_string = [str(ord("(")), str(ord("*"))]
+
+print(my_string)
+print(dfa.simulate(my_string))
+
 # Escritura del archivo scanner.py.
 write_scanner("scanner.py", postfix_yalex_regex, yalex_parser_code)

@@ -281,6 +281,7 @@ def get_file_initial_regex_and_tokens(file_lines):
             token_to_return = ""
 
     if (len(yalex_file_regex) != len(regex_code_and_tokens)):
+        print(yalex_file_regex, regex_code_and_tokens, len(yalex_file_regex), len(regex_code_and_tokens))
         actual_regex_code_and_tokens = regex_code_and_tokens.copy()
         regex_code_and_tokens = [("return WHITESPACE", "WHITESPACE")]
         for entry in actual_regex_code_and_tokens:

@@ -298,6 +298,7 @@ def direct_construction(postfix, tokens):
     for state in states:
         for index in range(len(tokens)):
             if (f"#{index}" in mapping[state]):
+                print(index, tokens[index])
                 acceptance_states.add((state, tokens[index]))
 
     # Eliminación de los estados de aceptación y sus tokens del conjunto de estados.
