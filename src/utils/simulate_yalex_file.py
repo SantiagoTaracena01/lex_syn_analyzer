@@ -52,7 +52,7 @@ def simulate_yalex_file(path, output_file, dfa, return_token):
         if (not result):
 
             # Se imprime el error léxico y se reinicia la simulación.
-            output_file_lines.append(f"!!! Found lexical error: \"{''.join([chr(int(char)) for char in simulated_string])}\" with ASCII {simulated_string}\n\n")
+            output_file_lines.append(f"ERROR:{''.join([chr(int(char)) for char in simulated_string])}\n")
             i += 1
             j = i
 
@@ -82,7 +82,7 @@ def simulate_yalex_file(path, output_file, dfa, return_token):
                 if (len(file_string) == 1):
 
                     # Impresión del último token y finalización de la simulación.
-                    output_file_lines.append(f"-> Found token {last_token}: \"{''.join([chr(int(char)) for char in simulated_string[:-1]])}\" with ASCII {simulated_string[:-1]}\n\n")
+                    output_file_lines.append(f"{last_token}:{''.join([chr(int(char)) for char in simulated_string[:-1]])}\n")
                     file_string = []
                     break
 
@@ -115,7 +115,7 @@ def simulate_yalex_file(path, output_file, dfa, return_token):
                 else:
 
                     # Impresión del último token aceptado y reinicio de la simulación.
-                    output_file_lines.append(f"-> Found token {last_token}: \"{''.join([chr(int(char)) for char in string_before_look_ahead[:-1]])}\" with ASCII {string_before_look_ahead[:-1]}\n\n")
+                    output_file_lines.append(f"{last_token}:{''.join([chr(int(char)) for char in string_before_look_ahead[:-1]])}\n")
                     file_string = file_string[i:]
                     i, j = 0, 0
                     if (len(file_string) == 0):

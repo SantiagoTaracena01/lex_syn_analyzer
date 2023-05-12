@@ -95,8 +95,12 @@ def build_expression_tree(postfix):
 # Método para calcular si un nodo es nullable o no.
 def nullable(node):
 
+    # Modo pánico supongo.
+    if (type(node) != Node):
+        return False
+
     # Cálculo del caso base de nullable, es decir, una hoja.
-    if ((node.left == None) and (node.right == None)):
+    if ((type(node) == Node) and (node.left == None) and (node.right == None)):
 
         # Retorno del valor de nullable según la hoja es epsilon o no.
         return (node.value == "ε")
@@ -118,6 +122,10 @@ def nullable(node):
 
 # Método para calcular el conjunto de firstpos de un nodo.
 def firstpos(node):
+
+    # Modo pánico supongo.
+    if (type(node) != Node):
+        return set()
 
     # Cálculo del caso base de firstpos, es decir, una hoja.
     if ((node.left == None) and (node.right == None)):
@@ -149,6 +157,10 @@ def firstpos(node):
 # Método para calcular el conjunto de lastpos de un nodo.
 def lastpos(node):
 
+    # Modo pánico supongo.
+    if (type(node) != Node):
+        return set()
+
     # Cálculo del caso base de lastpos, es decir, una hoja.
     if ((node.left == None) and (node.right == None)):
 
@@ -178,6 +190,10 @@ def lastpos(node):
 
 # Método para calcular el conjunto de followpos de un nodo.
 def followpos(node):
+
+    # Modo pánico supongo.
+    if (type(node) != Node):
+        return set()
 
     # Cálculo del caso base de followpos, es decir, una hoja.
     if ((node.left == None) and (node.right == None)):
@@ -298,7 +314,6 @@ def direct_construction(postfix, tokens):
     for state in states:
         for index in range(len(tokens)):
             if (f"#{index}" in mapping[state]):
-                print(index, tokens[index])
                 acceptance_states.add((state, tokens[index]))
 
     # Eliminación de los estados de aceptación y sus tokens del conjunto de estados.

@@ -258,6 +258,21 @@ def get_file_initial_regex_and_tokens(file_lines):
     yalex_file_regex = [char.replace(" ", "") for char in clean_yalex_file_regex]
     regex_associated_code = [token.strip() for token in regex_associated_code]
 
+    # Fix para el or.
+    if (yalex_file_regex.count("'") == 2):
+        yalex_file_regex_copy = []
+        for regex in yalex_file_regex:
+            if (regex == "'"):
+                continue
+            else:
+                yalex_file_regex_copy.append(regex)
+        yalex_file_regex_copy.append("'|'")
+        yalex_file_regex = yalex_file_regex_copy.copy()
+
+    # Fix para el or.
+    regex_associated_code.remove("return OR")
+    regex_associated_code.append("return OR")
+
     # Obtención de los tokens de la expresión regular.
     regex_code_and_tokens = []
     code_return_positions = [find_all(code, "return") for code in regex_associated_code]
@@ -281,9 +296,8 @@ def get_file_initial_regex_and_tokens(file_lines):
             token_to_return = ""
 
     if (len(yalex_file_regex) != len(regex_code_and_tokens)):
-        print(yalex_file_regex, regex_code_and_tokens, len(yalex_file_regex), len(regex_code_and_tokens))
         actual_regex_code_and_tokens = regex_code_and_tokens.copy()
-        regex_code_and_tokens = [("return WHITESPACE", "WHITESPACE")]
+        regex_code_and_tokens = []
         for entry in actual_regex_code_and_tokens:
             regex_code_and_tokens.append(entry)
 
@@ -355,6 +369,9 @@ def regex_chars_to_ascii(file_regex):
         regex_copy = []
         file_regex_copy.remove(regex)
 
+        # Variable que indica si se está en una expresión entre comillas.
+        on_double_quotes = False
+
         # Iteración sobre cada símbolo de la expresión regular.
         for jndex, char in enumerate(regex):
 
@@ -389,7 +406,19 @@ def regex_chars_to_ascii(file_regex):
                 regex_copy.append(char)
 
             # Si el símbolo es una comilla, sólo se ignora.
-            elif (char in ("'", "\"")):
+            elif (char == "'"):
+                continue
+
+            # Si el símbolo es una comilla simple, se cambia a paréntesis.
+            elif ((char == "\"") and (not on_double_quotes)):
+                on_double_quotes = True
+                regex_copy.append("(")
+                continue
+
+            # Si el símbolo es una comilla doble, se cambia a paréntesis.
+            elif ((char == "\"") and (on_double_quotes)):
+                on_double_quotes = False
+                regex_copy.append(")")
                 continue
 
             # Para cualquier otro símbolo, se agrega convertido a ASCII.

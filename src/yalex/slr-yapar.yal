@@ -1,0 +1,22 @@
+let delim = [' ''\t''\n']
+let characters = ['+''*''-''/']
+let ws = delim+
+let mayus = ['A'-'Z']
+let minus = ['a'-'z']
+let nonTerminal = mayus*
+let terminal = minus*
+
+rule tokens =
+    ws            { return WHITESPACE }
+  | "%token"      { return TOKEN }
+  | "IGNORE"      { return IGNORE }
+  | "/'*'"        { return LEFTCOMMENT }
+  | "'*'/"        { return RIGHTCOMMENT }
+  | "%%"          { return SPLIT }
+  | characters    { return CHARACTERS }
+  | terminal      { return TERMINAL }
+  | nonTerminal   { return NONTERMINAL }
+  | '%'           { return PERCENTAGE }
+  | '|'           { return OR }
+  | ':'           { return COLON }
+  | ';'           { return SEMICOLON }
