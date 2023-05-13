@@ -30,4 +30,5 @@ from utils.parse_yapar import parse_yapar
 # # Escritura del archivo scanner.py.
 # write_scanner("scanner.py", postfix_yalex_regex, yalex_parser_code)
 
-parse_yapar("./out/output.txt")
+yapar_grammar = parse_yapar("./out/output.txt")
+print(yapar_grammar)
