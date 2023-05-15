@@ -12,6 +12,7 @@ class Grammar(object):
         self.productions = productions
         self.terminals = terminals
         self.non_terminals = non_terminals
+        self.initial_element = productions[0].name
 
     # Método que obtiene las producciones de un símbolo dado.
     def get_productions_by_symbol(self, symbol):
