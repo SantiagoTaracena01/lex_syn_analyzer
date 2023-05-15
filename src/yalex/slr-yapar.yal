@@ -3,8 +3,8 @@ let characters = ['+''*''-''/']
 let ws = delim+
 let mayus = ['A'-'Z']
 let minus = ['a'-'z']
-let nonTerminal = mayus*
-let terminal = minus*
+let nonTerminal = minus*
+let terminal = mayus*
 
 rule tokens =
     ws            { return WHITESPACE }

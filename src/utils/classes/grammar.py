@@ -4,14 +4,22 @@ Universidad del Valle de Guatemala
 Santiago Taracena Puga (20017)
 """
 
+# Clase Grammar para modelar gramáticas.
 class Grammar(object):
+
+    # Método constructor de la clase Grammar.
     def __init__(self, productions, terminals, non_terminals):
         self.productions = productions
         self.terminals = terminals
         self.non_terminals = non_terminals
 
-    def __str__(self):
+    # Método que obtiene las producciones de un símbolo dado.
+    def get_productions_by_symbol(self, symbol):
+        return [production for production in self.productions if (symbol == production.name)]
+
+    # Método que representa a la clase Grammar en forma de string.
+    def __repr__(self):
         grammar_string = ""
         for production in self.productions:
-            grammar_string += f"{production.name} -> {production.rules}\n"
-        return grammar_string # + "\n" + str(self.terminals) + "\n" + str(self.non_terminals) + "\n"
+            grammar_string += f"{production.name} -> {' '.join(production.listed_rules)}\n"
+        return grammar_string

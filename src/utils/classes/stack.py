@@ -15,6 +15,10 @@ class Stack(object):
     def __len__(self):
         return len(self.__stack)
 
+    # Override de la función in, retorna si el item está en el stack.
+    def __contains__(self, item):
+        return (item in self.__stack)
+
     # Representación en string del stack, retorna la propiedad self.__stack.
     def __repr__(self):
         return str(self.__stack)
