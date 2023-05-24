@@ -11,30 +11,32 @@ from utils.first import first
 def follow(grammar, element):
 
     # Resultado de la ejecución de follow.
-    result = []
+    result = set()
 
     # Regla para el caso de que el elemento sea el símbolo inicial.
-    if (element == grammar.initial_element):
-        result.append("$")
+    if (element == grammar.initial_production.rules):
+        result |= { "$" }
 
-    # Cualquier otro caso.
-    else:
+    # Iteración sobre las producciones.
+    for production in grammar.productions:
 
-        # Iteración sobre las producciones.
-        for production in grammar.productions:
+        # Ejecución si el elemento está en las reglas de la producción.
+        if (element in production.listed_rules):
 
             # Índice del elemento en la producción.
             element_index = production.listed_rules.index(element)
 
-            # Si el elemento no es el último se calcula el first de la siguiente regla.
+            # Si el elemento no es el último se calcula el first del siguiente elemento.
             if (element_index < (len(production.listed_rules) - 1)):
-                next_result = first(grammar, production.listed_rules[element_index + 1])
-                result.append(next_result)
 
-            # Si el elemento es el último se calcula el follow del símbolo no terminal.
-            if ("ε" in first(grammar, production.listed_rules[element_index])):
-                next_result = follow(grammar, production.name)
-                result.append(next_result)
+                # Unión del resultado del first del siguiente elemento.
+                result |= first(grammar, production.listed_rules[element_index + 1])
+
+            # Si el elemento es el último de la regla se obtiene el follow del nombre de la producción.
+            elif (element_index == (len(production.listed_rules) - 1)):
+
+                # Unión del resultado del follow del nombre de la producción.
+                result |= follow(grammar, production.name)
 
     # Retorno del resultado.
     return result
