@@ -93,11 +93,8 @@ def lr0_construction(grammar):
                 if (acceptance_production in goto_result):
                     new_state.transitions["$"] = accept_state
 
-    print()
-
     for state in created_states:
         if (state.name == "ACCEPT"):
             continue
-        print(state)
 
     return LR0Automata(created_states)

@@ -108,7 +108,6 @@ def parse_yapar(output_path):
 
     for production in splitted_productions_copy:
         if (production.name.strip() == "" or production.rules.strip() == ""):
-            print(production)
             continue
         splitted_productions.append(production)
 

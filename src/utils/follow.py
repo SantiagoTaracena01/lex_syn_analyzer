@@ -13,7 +13,7 @@ def follow(grammar, element):
     # Resultado de la ejecución de follow.
     result = set()
 
-    # Regla para el caso de que el elemento sea el símbolo inicial.
+    # Regla para el caso de que el elemento sea el símbolo inicial (se agrega $).
     if (element == grammar.initial_production.rules):
         result |= { "$" }
 

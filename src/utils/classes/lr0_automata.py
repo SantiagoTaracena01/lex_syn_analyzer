@@ -17,5 +17,7 @@ class LR0Automata(object):
     def __repr__(self):
         repr_string = ""
         for state in self.states:
+            if (state.name == "ACCEPT"):
+                continue
             repr_string += f"{state}\n"
         return repr_string
