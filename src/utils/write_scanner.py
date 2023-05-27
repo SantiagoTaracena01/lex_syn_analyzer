@@ -20,6 +20,7 @@ def write_scanner(filename, regex, yalex_code):
         "",
         "test_file = sys.argv[1] if (len(sys.argv) > 1) else \"./tests/slr-1-test.txt\"",
         "output_file = sys.argv[2] if (len(sys.argv) > 2) else \"./out/output.txt\"",
+        "output_type = sys.argv[3] if (len(sys.argv) > 3) else \"analysis\"",
         "",
         "def return_token(found_token):",
     ]
@@ -45,7 +46,7 @@ def write_scanner(filename, regex, yalex_code):
 
     # Llamada final a la simulación del archivo.
     lines.append("")
-    lines.append("simulate_yalex_file(test_file, output_file, dfa, return_token)")
+    lines.append("simulate_yalex_file(test_file, output_file, dfa, output_type, return_token)")
 
     # Escritura del archivo scanner.py.
     with open(filename, "w+") as file:

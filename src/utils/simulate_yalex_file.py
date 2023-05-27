@@ -5,7 +5,7 @@ Santiago Taracena Puga (20017)
 """
 
 # Función para simular un archivo .yal.
-def simulate_yalex_file(path, output_file, dfa, return_token):
+def simulate_yalex_file(path, output_file, dfa, output_type, return_token):
 
     # Archivo en forma de string inicial.
     file_string = ""
@@ -131,9 +131,17 @@ def simulate_yalex_file(path, output_file, dfa, return_token):
 
     # Escritura del archivo de output de la simulación.
     with open(output_file, "w", newline="\n") as file:
-        file.write(f"- * - * - \"{path}\" simulation results: - * - * -\n\n")
-        for line in output_file_lines:
-            file.write(line)
+        if (output_type == "analysis"):
+            file.write(f"- * - * - \"{path}\" simulation results: - * - * -\n\n")
+            for line in output_file_lines:
+                file.write(line)
+        elif (output_type == "parsing"):
+            for line in output_file_lines:
+                splitted_line = line.split(":")
+                token_to_write = splitted_line[0]
+                if (token_to_write == "WHITESPACE"):
+                    continue
+                file.write(token_to_write + " ")
 
     # Impresión de la simulación exitosa.
     print(f"\nFile \"{path}\" simulated successfully. Check \"{output_file}\".\n")

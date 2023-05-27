@@ -270,8 +270,9 @@ def get_file_initial_regex_and_tokens(file_lines):
         yalex_file_regex = yalex_file_regex_copy.copy()
 
     # Fix para el or.
-    regex_associated_code.remove("return OR")
-    regex_associated_code.append("return OR")
+    if ("return OR" in regex_associated_code):
+        regex_associated_code.remove("return OR")
+        regex_associated_code.append("return OR")
 
     # Obtención de los tokens de la expresión regular.
     regex_code_and_tokens = []
