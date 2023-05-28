@@ -24,5 +24,5 @@ parsing_table = lr_parsing_table_construction(yapar_grammar, lr0_automata)
 lexical_output, syntactic_output = simulate_lr0(yapar_grammar, parsing_table, lr0_automata, simulation_file)
 
 # Resultados generales del análisis léxico y sintáctico.
-print(f"¿La cadena dentro de {simulation_file} es aceptada por las expresiones regulares? {lexical_output}")
-print(f"¿La cadena dentro de {simulation_file} es aceptada por la gramática? {syntactic_output}\n")
+print(f"Is string in {simulation_file} accepted by regular expressions (lexical rules)? {lexical_output}")
+print(f"Is string in {simulation_file} accepted by grammar (syntax)? {syntactic_output}\n")
