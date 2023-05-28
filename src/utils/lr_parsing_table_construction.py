@@ -5,11 +5,15 @@ Santiago Taracena Puga (20017)
 """
 
 # Módulos importantes para la construcción de la tabla.
+import sys
 from prettytable import PrettyTable
 from utils.follow import follow
 
 # Función que genera la tabla de construcción para la simulación de un autómata LR(0).
 def lr_parsing_table_construction(grammar, lr0_automata):
+
+    # Separación entre el comando y la tabla de parseo.
+    print()
 
     # Instancia inicial de la tabla de construcción.
     table = {}
@@ -64,7 +68,10 @@ def lr_parsing_table_construction(grammar, lr0_automata):
                 if ((len(production.listed_rules) > 1) and (production.listed_rules[-2] == ".")):
 
                     # Cálculo del follow del nombre de la producción con el punto al final.
-                    follow_result = follow(grammar, production.name)
+                    try:
+                        follow_result = follow(grammar, production.name)
+                    except RecursionError:
+                        sys.exit(f"An error occured building table. Conflict in ({state.name}, {symbol}).\n")
 
                     # Si el símbolo está en el resultado del follow, se hace reduce con el índice de la producción.
                     if (symbol in follow_result):
@@ -93,7 +100,7 @@ def lr_parsing_table_construction(grammar, lr0_automata):
         graphic_table.add_row([entry] + table[entry])
 
     # Impresión de la tabla gráfica construida.
-    print("\n", graphic_table)
+    print(graphic_table)
 
     # Escritura de la tabla constuida en .txt.
     with open("./out/parsing-table.txt", "w+") as file:

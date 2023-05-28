@@ -33,7 +33,7 @@ def follow(grammar, element):
                 result |= first(grammar, production.listed_rules[element_index + 1])
 
             # Si el elemento es el último de la regla se obtiene el follow del nombre de la producción.
-            elif (element_index == (len(production.listed_rules) - 1)):
+            elif ((element_index == (len(production.listed_rules) - 1)) and (element != production.name)):
 
                 # Unión del resultado del follow del nombre de la producción.
                 result |= follow(grammar, production.name)

@@ -10,6 +10,9 @@ from prettytable import PrettyTable
 # Función que simula un autómata LR(0) con un archivo de prueba dado.
 def simulate_lr0(grammar, parsing_table, lr0, test_path):
 
+    # Separación entre la tabla de parseo y la tabla de simulación.
+    print()
+
     # Instancia inicial del string a simular (que realmente es un array).
     string_to_simulate = ""
 
@@ -33,9 +36,9 @@ def simulate_lr0(grammar, parsing_table, lr0, test_path):
     # Resultado del análisis léxico de la oración.
     is_string_lexically_correct = not "ERROR" in string_to_simulate
 
-    # Si la oración no es correcta léxicamente, se retorna False.
+    # Si la oración no es correcta léxicamente, se rechaza la cadena por razones léxicas.
     if (not is_string_lexically_correct):
-        return False
+        return False, False
 
     # Tabla que indica los pasos de la simulación.
     graphic_table = PrettyTable()
@@ -48,10 +51,8 @@ def simulate_lr0(grammar, parsing_table, lr0, test_path):
     simulation_input = string_to_simulate.copy()
     action = ""
 
-    simulating = True
-
     # Ciclo que realiza la simulación.
-    while (simulating):
+    while (True):
 
         # Copia de los estados, símbolos e input para la tabla.
         last_state_stack = state_stack.copy()
@@ -129,6 +130,12 @@ def simulate_lr0(grammar, parsing_table, lr0, test_path):
             # Aceptación de la cadena.
             textual_action = "Accept"
 
+        # Si no hay acción, la simulación finaliza.
+        if (not action):
+
+            # Error en la simulación.
+            textual_action = f"ERROR: No action with {current_state.name} and {symbol}"
+
         # Nueva fila para la tabla de simulación.
         graphic_table.add_row([
             iteration,
@@ -148,10 +155,21 @@ def simulate_lr0(grammar, parsing_table, lr0, test_path):
             with open("./out/simulation-table.txt", "w+") as file:
                 file.write(str(graphic_table) + "\n")
 
-            # La simulación finaliza.
-            simulating = False
+            # Impresión de la tabla de la simulación.
+            print(graphic_table, "\n")
 
-        if (iteration == 1000):
-            return False
+            # Aceptación de la cadena.
+            return True, True
 
-    print(graphic_table, "\n")
+        # Si la acción es ERROR, la cadena es rechazada.
+        if (textual_action.startswith("ERROR")):
+
+            # Escritura de la tabla constuida en .txt.
+            with open("./out/simulation-table.txt", "w+") as file:
+                file.write(str(graphic_table) + "\n")
+
+            # Impresión de la tabla de la simulación.
+            print(graphic_table, "\n")
+
+            # Rechazo de la cadena por razones sintácticas.
+            return True, False

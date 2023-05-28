@@ -20,6 +20,9 @@ yapar_grammar = parse_yapar(yapar_file)
 lr0_automata = lr0_construction(yapar_grammar)
 
 # Impresión de la tabla de parseo y la tabla de la simulación del archivo dado.
-print()
 parsing_table = lr_parsing_table_construction(yapar_grammar, lr0_automata)
-simulate_lr0(yapar_grammar, parsing_table, lr0_automata, simulation_file)
+lexical_output, syntactic_output = simulate_lr0(yapar_grammar, parsing_table, lr0_automata, simulation_file)
+
+# Resultados generales del análisis léxico y sintáctico.
+print(f"¿La cadena dentro de {simulation_file} es aceptada por las expresiones regulares? {lexical_output}")
+print(f"¿La cadena dentro de {simulation_file} es aceptada por la gramática? {syntactic_output}\n")
