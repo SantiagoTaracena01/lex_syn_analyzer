@@ -93,7 +93,7 @@ def lr_parsing_table_construction(grammar, lr0_automata):
         graphic_table.add_row([entry] + table[entry])
 
     # Impresión de la tabla gráfica construida.
-    print(graphic_table)
+    print("\n", graphic_table)
 
     # Escritura de la tabla constuida en .txt.
     with open("./out/parsing-table.txt", "w+") as file:
